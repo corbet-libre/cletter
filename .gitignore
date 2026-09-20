@@ -1,0 +1,13 @@
+/target/
+node_modules/
+
+# Generated release outputs
+**/dist/
+**/LICENSES/
+# Anchored: keep the committed root and py/ notices visible; ignore generated copies.
+!/LICENSES/
+!/py/LICENSES/
+*.tgz
+__pycache__/
+*.pyc
+*.egg-info/

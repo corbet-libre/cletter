@@ -1,0 +1,75 @@
+{
+  "name": "@corbet-foss/cletter",
+  "version": "0.4.0",
+  "description": "Locale-correct business correspondence: composes cnice, cink and cdate. Mirrors the cletter Rust crate release line.",
+  "license": "LGPL-3.0-only WITH LGPL-3.0-linking-exception",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corbet-foss/cletter.git",
+    "directory": "js/@corbet-foss/cletter"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "default": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/browser.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "README.md",
+    "LICENSES/**/*"
+  ],
+  "scripts": {
+    "prepack": "bun run build",
+    "conformance": "bun ./scripts/conformance.mts",
+    "typecheck": "tsc --noEmit -p ./tsconfig.json",
+    "build": "bun ./scripts/build.mjs"
+  },
+  "dependencies": {
+    "@corbet-foss/cnice": "^0.1.0",
+    "@corbet-foss/cdate": "^0.3.1",
+    "@corbet-foss/cink": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "25.8.0",
+    "typescript": "6.0.3"
+  },
+  "module": "./dist/index.js",
+  "unpkg": "./dist/browser.js",
+  "jsdelivr": "./dist/browser.js",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "homepage": "https://github.com/corbet-foss/cletter#readme",
+  "bugs": {
+    "url": "https://github.com/corbet-foss/cletter/issues"
+  },
+  "keywords": [
+    "i18n",
+    "correspondence",
+    "typescript",
+    "rust",
+    "cletter"
+  ]
+}

@@ -1,0 +1,8 @@
+schema = 1
+
+# Historical release validation is separate from the current development line.
+[archives.pypi-release]
+revision = "52e8c09794643f63f22972833b16ded7021eb574"
+archive_variable = "PYPI_SOURCE_ARCHIVE"
+digest_variable = "PYPI_SOURCE_SHA256"
+workflows = ["published-python-release"]

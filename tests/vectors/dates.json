@@ -1,0 +1,8 @@
+[
+  { "name": "front door exposes swiss long date", "fn": "long_date", "locale": "de-ch", "year": 2026, "month": 9, "day": 7, "expected": "7. September 2026" },
+  { "name": "front door exposes us medium date", "fn": "medium_date", "locale": "en-us", "year": 2026, "month": 9, "day": 7, "expected": "Sep 7, 2026" },
+  { "name": "front door exposes british short date", "fn": "short_date", "locale": "en-gb", "year": 2026, "month": 9, "day": 7, "expected": "07/09/2026" },
+  { "name": "front door exposes month-year dateline", "fn": "month_year", "locale": "de-ch", "year": 2026, "month": 9, "day": 7, "expected": "September 2026" },
+  { "name": "front door rejects impossible dates", "fn": "long_date", "locale": "de-ch", "year": 2025, "month": 2, "day": 30, "expected": null },
+  { "name": "front door formats french dates natively", "fn": "long_date", "locale": "fr", "year": 2026, "month": 9, "day": 7, "expected": "7 septembre 2026" }
+]

@@ -1,0 +1,96 @@
+schema = 1
+project = "cletter"
+
+# Select affected checks explicitly; no implicit full language/platform matrix.
+[checks.rust]
+kind = "cargo"
+actions = ["fmt", "test", "clippy"]
+
+[checks.fmt]
+kind = "cargo"
+actions = ["fmt"]
+
+# This requires an already installed compiler; ccid never installs toolchains.
+[checks.rust-msrv]
+kind = "cargo"
+actions = ["test"]
+toolchain = "1.94.0"
+
+[checks.metadata]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "metadata"]]
+
+[checks.javascript]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "javascript"]]
+
+[checks.rust-package]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "rust-package"]]
+
+[checks.rust-dependencies]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "rust-dependencies"]]
+
+[checks.resolve-dependencies]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "resolve-dependencies"]]
+
+[checks.js-package]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "js-package"]]
+
+[checks.js-pnpm]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "js-pnpm"]]
+
+[checks.js-yarn]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "js-yarn"]]
+
+[checks.js-bun]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "js-bun"]]
+
+[checks.python-package]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "python-package"]]
+
+[checks.typst-package]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "typst-package"]]
+
+[checks.typst-conformance]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "typst-conformance"]]
+
+[checks.published-npm]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "published-npm"]]
+
+[checks.published-jsr]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "published-jsr"]]
+
+[checks.published-python]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "published-python"]]
+
+# Manual publication adapter; no product compilation occurs.
+[checks.release]
+kind = "commands"
+commands = [["python3", ".ci/publish.py"]]
+
+# Syntax and manual publication contract; no product build or network.
+[checks.release-config]
+kind = "commands"
+commands = [["python3", ".ci/release-check.py"]]
+
+[checks.typst-family-preview]
+kind = "commands"
+commands = [["python3", ".ci/check.py", "typst-family-preview"]]
+
+# The release's own selector runs from its separately pinned historical archive.
+[checks.published-python-release]
+kind = "commands"
+commands = [["python3", ".ci/published-python-release.py"]]

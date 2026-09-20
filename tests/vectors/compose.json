@@ -1,0 +1,23 @@
+[
+  { "name": "swiss replaces sharp s", "fn": "apply_ortho", "locale": "de-ch", "text": "Mit freundlichen Grüßen", "expected": "Mit freundlichen Grüssen" },
+  { "name": "german keeps sharp s", "fn": "apply_ortho", "locale": "de", "text": "Mit freundlichen Grüßen", "expected": "Mit freundlichen Grüßen" },
+  { "name": "english untouched", "fn": "apply_ortho", "locale": "en", "text": "Straße", "expected": "Straße" },
+  { "name": "german salutation delegates to cnice.greet", "fn": "salutation", "locale": "de-ch", "person": "Frau Dr. Müller", "expected": "Sehr geehrte Frau Dr. Müller" },
+  { "name": "german generic fallback delegates", "fn": "salutation", "locale": "de", "person": "Jane Doe", "expected": "Sehr geehrte Damen und Herren," },
+  { "name": "french without honorific uses formal", "fn": "salutation", "locale": "fr", "person": "Jane Doe", "expected": "Madame, Monsieur," },
+  { "name": "unknown locale uses english template", "fn": "salutation", "locale": "xx", "person": "Jane Doe", "expected": "Dear Jane Doe," },
+  { "name": "empty name warns everywhere", "fn": "warnings", "location": "fixture", "locale": "en-us", "person": "", "expected": ["fixture: job.cl_recipient.name is empty; using formal salutation (provide a name for tailored opportunities)"] },
+  { "name": "honorific-free german warns once", "fn": "warnings", "location": "fixture", "locale": "de-ch", "person": "Jane Doe", "expected": ["fixture: job.cl_recipient.name has no parsable honorific for de-ch; using formal salutation (provide an explicit honorific for tailored opportunities)"] },
+  { "name": "complete german name is clean", "fn": "warnings", "location": "fixture", "locale": "de-ch", "person": "Frau Dr. Müller", "expected": [] },
+  { "name": "swiss lowercase replaces sharp s", "fn": "apply_ortho", "locale": "de-ch", "text": "Mit freundlichen Grüßen", "expected": "Mit freundlichen Grüssen" },
+  { "name": "german salutation lowercase delegates to cnice.greet", "fn": "salutation", "locale": "de-ch", "person": "Frau Dr. Müller", "expected": "Sehr geehrte Frau Dr. Müller" },
+  { "name": "german salutation uppercase delegates to cnice.greet", "fn": "salutation", "locale": "DE-CH", "person": "Frau Dr. Müller", "expected": "Sehr geehrte Frau Dr. Müller" },
+  { "name": "honorific-free german lowercase warns once", "fn": "warnings", "location": "fixture", "locale": "de-ch", "person": "Jane Doe", "expected": ["fixture: job.cl_recipient.name has no parsable honorific for de-ch; using formal salutation (provide an explicit honorific for tailored opportunities)"] },
+  { "name": "english-ch lowercase uses formal (no invented familiarity)", "fn": "salutation", "locale": "en-ch", "person": "Jane Doe", "expected": "Dear Sir or Madam," },
+  { "name": "italian salutation renders", "fn": "salutation", "locale": "it", "person": "Sig.ra Rossi", "expected": "Gentile Sig.ra Rossi," },
+  { "name": "romansh salutation renders", "fn": "salutation", "locale": "rm", "person": "Signura Schmid", "expected": "Stimada signura Schmid," },
+  { "name": "english salutation renders", "fn": "salutation", "locale": "en", "person": "Ms Smith", "expected": "Dear Ms Smith," },
+  { "name": "honorific-free italian warns once", "fn": "warnings", "location": "fixture", "locale": "it", "person": "Mario Rossi", "expected": ["fixture: job.cl_recipient.name has no parsable honorific for it; using formal salutation (provide an explicit honorific for tailored opportunities)"] },
+  { "name": "honorific-free romansh warns once", "fn": "warnings", "location": "fixture", "locale": "rm", "person": "Hans Schmid", "expected": ["fixture: job.cl_recipient.name has no parsable honorific for rm; using formal salutation (provide an explicit honorific for tailored opportunities)"] },
+  { "name": "complete french name is clean", "fn": "warnings", "location": "fixture", "locale": "fr", "person": "Monsieur Dupont", "expected": [] }
+]

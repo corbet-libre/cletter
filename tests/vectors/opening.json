@@ -1,0 +1,22 @@
+[
+  { "name": "swiss formal", "fn": "opening", "locale": "de-ch", "expected": "Sehr geehrte Damen und Herren" },
+  { "name": "swiss named", "fn": "opening", "locale": "de-ch", "person": "Jane Doe", "expected": "Sehr geehrte Damen und Herren" },
+  { "name": "german formal carries comma", "fn": "opening", "locale": "de", "expected": "Sehr geehrte Damen und Herren," },
+  { "name": "us formal", "fn": "opening", "locale": "en-us", "expected": "Dear Hiring Manager," },
+  { "name": "us named", "fn": "opening", "locale": "en-us", "person": "Jane Doe", "expected": "Dear Hiring Manager," },
+  { "name": "japanese named", "fn": "opening", "locale": "ja", "person": "田中", "expected": "田中様" },
+  { "name": "empty name falls back to formal", "fn": "opening", "locale": "en-us", "person": "   ", "expected": "Dear Hiring Manager," },
+  { "name": "override wins", "fn": "opening", "locale": "de-ch", "person": "Jane Doe", "override": "Guten Tag Jane Doe", "expected": "Guten Tag Jane Doe" },
+  { "name": "unknown locale falls back to english", "fn": "opening", "locale": "xx", "person": "Jane Doe", "expected": "Dear Jane Doe," },
+  { "name": "unknown region falls back to base", "fn": "opening", "locale": "fr-be", "person": "Jane Doe", "expected": "Madame, Monsieur," },
+  { "name": "swiss formal lowercase", "fn": "opening", "locale": "de-ch", "expected": "Sehr geehrte Damen und Herren" },
+  { "name": "swiss named lowercase", "fn": "opening", "locale": "de-ch", "person": "Jane Doe", "expected": "Sehr geehrte Damen und Herren" },
+  { "name": "swiss formal uppercase", "fn": "opening", "locale": "DE-CH", "expected": "Sehr geehrte Damen und Herren" },
+  { "name": "english-ch lowercase uses formal (no invented familiarity)", "fn": "opening", "locale": "en-ch", "person": "Jane Doe", "expected": "Dear Sir or Madam," },
+  { "name": "swiss named with honorific renders fully", "fn": "opening", "locale": "de-ch", "person": "Frau Dr. Müller", "expected": "Sehr geehrte Frau Dr. Müller" },
+  { "name": "french named with honorific", "fn": "opening", "locale": "fr", "person": "Madame Dupont", "expected": "Madame Dupont," },
+  { "name": "italian named with honorific", "fn": "opening", "locale": "it", "person": "Sig. Rossi", "expected": "Gentile Sig. Rossi," },
+  { "name": "romansh named with honorific", "fn": "opening", "locale": "rm", "person": "signur Schmid", "expected": "Stimà signur Schmid," },
+  { "name": "romansh formal", "fn": "opening", "locale": "rm", "expected": "Stimadas dunnas, stimads signurs," },
+  { "name": "italian named without honorific falls back", "fn": "opening", "locale": "it", "person": "Mario Rossi", "expected": "Gentili Signore, Egregi Signori," }
+]

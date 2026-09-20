@@ -1,0 +1,16 @@
+[
+  { "name": "german plus zurich", "fn": "resolve_locale", "language": "de", "location": "Zürich, Zug", "expected": "de-ch" },
+  { "name": "german plus germany", "fn": "resolve_locale", "language": "de", "location": "Berlin, Deutschland", "expected": "de-de" },
+  { "name": "german plus austria", "fn": "resolve_locale", "language": "de", "location": "Wien, Österreich", "expected": "de-at" },
+  { "name": "english plus new york", "fn": "resolve_locale", "language": "en", "location": "New York, USA", "expected": "en-us" },
+  { "name": "english plus london", "fn": "resolve_locale", "language": "en", "location": "London, United Kingdom", "expected": "en-gb" },
+  { "name": "french plus geneva", "fn": "resolve_locale", "language": "fr", "location": "Genève", "expected": "fr-ch" },
+  { "name": "no location preserves language", "fn": "resolve_locale", "language": "de", "expected": "de" },
+  { "name": "no location preserves variant", "fn": "resolve_locale", "language": "de-ch", "expected": "de-ch" },
+  { "name": "japanese ignores country", "fn": "resolve_locale", "language": "ja", "location": "Tokyo, Japan", "expected": "ja" },
+  { "name": "unknown country falls back to base", "fn": "resolve_locale", "language": "de", "location": "Madrid, Spain", "expected": "de" },
+  { "name": "case fixed variant", "fn": "resolve_locale", "language": "de-ch", "expected": "de-ch" },
+  { "name": "unknown language defaults to english", "fn": "resolve_locale", "language": "xx", "location": "Nowhere", "expected": "en" },
+  { "name": "missing language defaults to english", "fn": "resolve_locale", "expected": "en" },
+  { "name": "canton abbreviation resolves", "fn": "resolve_locale", "language": "it", "location": "Lugano, TI", "expected": "it-ch" }
+]

@@ -1,0 +1,12 @@
+[
+  { "name": "targeted swiss", "fn": "subject", "locale": "de-ch", "title": "Leiterin Kommunikation", "expected": "Bewerbung als Leiterin Kommunikation" },
+  { "name": "unsolicited swiss", "fn": "subject", "locale": "de-ch", "expected": "Initiativbewerbung" },
+  { "name": "empty title is unsolicited", "fn": "subject", "locale": "de-ch", "title": "  ", "expected": "Initiativbewerbung" },
+  { "name": "prefix override replaces prefix", "fn": "subject", "locale": "de-ch", "title": "Leiterin Kommunikation", "prefix_override": "Betreff", "expected": "Betreff Leiterin Kommunikation" },
+  { "name": "targeted us english", "fn": "subject", "locale": "en-us", "title": "Staff Engineer", "expected": "Application for Staff Engineer" },
+  { "name": "unsolicited japanese", "fn": "subject", "locale": "ja", "expected": "自主応募" },
+  { "name": "unknown locale falls back to english", "fn": "subject", "locale": "xx", "title": "Staff Engineer", "expected": "Application for Staff Engineer" },
+  { "name": "targeted swiss lowercase", "fn": "subject", "locale": "de-ch", "title": "Leiterin Kommunikation", "expected": "Bewerbung als Leiterin Kommunikation" },
+  { "name": "targeted english-ch lowercase", "fn": "subject", "locale": "en-ch", "title": "Lead", "expected": "Application for Lead" },
+  { "name": "romansh application subject", "fn": "subject", "locale": "rm", "title": "scolasta", "expected": "Candidatura per scolasta" }
+]

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cletter"
+version = "0.4.0"
+description = "Locale-correct business correspondence: composes cnice, cink and cdate"
+readme = "README.md"
+license = "LGPL-3.0-only WITH LGPL-3.0-linking-exception"
+license-files = ["LICENSES/*"]
+requires-python = ">=3.10"
+keywords = ["i18n", "correspondence", "locale"]
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: OS Independent"]
+
+dependencies = ["cnice>=0.1,<0.2", "cink>=0.2,<0.3", "cdate>=0.3,<0.4"]
+
+[project.urls]
+Homepage = "https://github.com/corbet-foss/cletter#readme"
+Repository = "https://github.com/corbet-foss/cletter"
+Issues = "https://github.com/corbet-foss/cletter/issues"
+
+[project.scripts]
+cletter = "cletter.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cletter"]

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "explicit mixed case and underscores",
+    "fn": "normalize_locale_id",
+    "input": " DE_Ch ",
+    "expected": "de-ch"
+  },
+  {
+    "name": "explicit region absent from correspondence tables survives",
+    "fn": "normalize_locale_id",
+    "input": "EN-CH",
+    "expected": "en-ch"
+  },
+  {
+    "name": "explicit script and region survive",
+    "fn": "normalize_locale_id",
+    "input": "zh_Hant_TW",
+    "expected": "zh-hant-tw"
+  },
+  {
+    "name": "unknown language and region do not fall back",
+    "fn": "normalize_locale_id",
+    "input": " XX_YY ",
+    "expected": "xx-yy"
+  },
+  {
+    "name": "bare language does not acquire a region",
+    "fn": "normalize_locale_id",
+    "input": "EN",
+    "expected": "en"
+  },
+  {
+    "name": "empty input does not acquire a default",
+    "fn": "normalize_locale_id",
+    "input": " \t\n",
+    "expected": ""
+  },
+  {
+    "name": "normalization does not repair malformed identifiers",
+    "fn": "normalize_locale_id",
+    "input": "en__US",
+    "expected": "en--us"
+  },
+  {
+    "name": "all six ASCII whitespace characters trim at both edges",
+    "fn": "normalize_locale_id",
+    "input": " \t\n\r\u000b\fEN_CH\f\u000b\r\n\t ",
+    "expected": "en-ch"
+  },
+  {
+    "name": "byte order mark is preserved for caller validation",
+    "fn": "normalize_locale_id",
+    "input": "\ufeffEN_CH\ufeff",
+    "expected": "\ufeffen-ch\ufeff"
+  },
+  {
+    "name": "next line is preserved for caller validation",
+    "fn": "normalize_locale_id",
+    "input": "\u0085EN_CH\u0085",
+    "expected": "\u0085en-ch\u0085"
+  },
+  {
+    "name": "non-ASCII letters are preserved for caller validation",
+    "fn": "normalize_locale_id",
+    "input": "\u212aO_\u00c4T",
+    "expected": "\u212ao-\u00c4t"
+  },
+  {
+    "name": "interior ASCII whitespace is preserved for caller validation",
+    "fn": "normalize_locale_id",
+    "input": " EN_\tCH ",
+    "expected": "en-\tch"
+  }
+]

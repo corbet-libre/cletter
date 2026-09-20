@@ -1,0 +1,15 @@
+{
+  "name": "@corbet-foss/cletter",
+  "version": "0.4.0",
+  "exports": "./src/index.ts",
+  "license": "LGPL-3.0-only",
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "README.md",
+      "LICENSES/**",
+      "package.json",
+      "jsr.json"
+    ]
+  }
+}
