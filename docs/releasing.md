@@ -18,7 +18,7 @@ version for corrections.
    crate, npm tarball, Python wheel and source distribution, Typst archive,
    SOURCE_COMMIT, SHA256SUMS, and receipts. Keep existing published tags intact.
 4. Import those exact source archives, receipts and packages into a publication
-   bundle using the [shared import contract](https://github.com/corbet-labs/ccid/blob/main/adapters/registry-publish.md).
+   bundle using the [shared import contract](https://github.com/corbet-infra/ccid/blob/main/adapters/registry-publish.md).
    Review its producing commits, existing tag target and SHA-256. Attach the
    bundle to the release for hosted execution, or retain it on the Crow worker.
 5. Run the manual release adapter in `status` mode, then select intended missing

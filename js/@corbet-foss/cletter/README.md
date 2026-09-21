@@ -120,9 +120,9 @@ their storage shape and declared locales. `normalize_language` and
 | [cnice](https://github.com/corbet-foss/cnice) | Formulaic phrases: salutations and closings for every covered locale (`greet` + `farewell`) |
 | [cdate](https://github.com/corbet-foss/cdate) | Calendar-date formatting (CLDR-pinned tables) |
 | [cink](https://github.com/corbet-foss/cink) | Handwritten signature images |
-| [cnumber](https://github.com/corbet-labs/cnumber) | Number formatting with Swiss amtlich mode (new) |
-| [cgrade](https://github.com/corbet-labs/cgrade) | School grades and Bavarian-formula conversion (new, standalone) |
-| [cbcp](https://github.com/corbet-labs/cbcp) | BCP 47 locale IDs and vendor adapters |
+| [cnumber](https://github.com/corbet-foss/cnumber) | Number formatting with Swiss amtlich mode (new) |
+| [cgrade](https://github.com/corbet-foss/cgrade) | School grades and Bavarian-formula conversion (new, standalone) |
+| [cbcp](https://github.com/corbet-foss/cbcp) | BCP 47 locale IDs and vendor adapters |
 
 
 ## Development

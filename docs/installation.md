@@ -54,7 +54,7 @@ For an isolated CLI environment, use `pipx install cletter==0.4.0` or
 The wheel contains no native extensions and is platform independent. Release
 evidence records the Python version and operating system actually exercised.
 Verified wheels and source distributions are also attached to the
-[GitHub release](https://github.com/corbet-labs/cletter/releases/tag/v0.4.0).
+[GitHub release](https://github.com/corbet-foss/cletter/releases/tag/v0.4.0).
 The Python 0.2.1 API predates `normalize_locale_id`, which appears in newer
 source documentation.
 

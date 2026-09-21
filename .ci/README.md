@@ -39,7 +39,7 @@ The checked-in `.ci/publish.py` adapter uses the exact shared publisher resource
 from the release workflow's verified ccid archive. It imports existing source
 archives, preparation receipts and tested packages into one reviewed bundle;
 producer identities remain distinct from later CI/publisher commits. See the
-[shared import and publication contract](https://github.com/corbet-labs/ccid/blob/main/adapters/registry-publish.md).
+[shared import and publication contract](https://github.com/corbet-infra/ccid/blob/main/adapters/registry-publish.md).
 
 The manual Crow `release` workflow reconciles existing bytes by default. Supply
 `RELEASE_BUNDLE` (an existing worker file), `RELEASE_BUNDLE_SHA256`, and optionally

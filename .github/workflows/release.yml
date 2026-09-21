@@ -34,7 +34,7 @@ jobs:
       contents: write
       id-token: write
     env:
-      CCID_REVISION: 00daadaeaa757320178715cac4e66ed388421f7e
+      CCID_REVISION: 33600b394910c643c5a6af6dff479fb16418428a
       RELEASE_BUNDLE_URL: ${{ inputs.bundle_url }}
       RELEASE_BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
       RELEASE_CHANNELS: ${{ inputs.channels }}
@@ -47,8 +47,8 @@ jobs:
       - name: Check out the exact shared publisher source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          repository: corbet-labs/ccid
-          ref: 00daadaeaa757320178715cac4e66ed388421f7e
+          repository: corbet-infra/ccid
+          ref: 33600b394910c643c5a6af6dff479fb16418428a
           path: .release-publisher-source
           persist-credentials: false
       - name: Verify shared source and select suitable hosted work
