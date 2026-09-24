@@ -2,8 +2,8 @@
  * Locale-correct business correspondence, composed from focused units.
  *
  * Pure TypeScript port of the cletter Rust crate: zero dependencies of its
- * own (it re-exports @corbet-foss/cnice, @corbet-foss/cdate and
- * @corbet-foss/cink), zero Node APIs, synchronous, no I/O.
+ * own (it re-exports @corbet-labs/cnice, @corbet-labs/cdate and
+ * @corbet-labs/cink), zero Node APIs, synchronous, no I/O.
  *
  * One locale per document (BCP 47). Unknown locales fall back through the
  * base language to English. Explicit overrides always win — tables supply
@@ -11,7 +11,7 @@
  */
 import { LETTER_TABLES } from './generated/tables.ts';
 
-import { greet, farewell } from '@corbet-foss/cnice';
+import { greet, farewell } from '@corbet-labs/cnice';
 export const closing = farewell.closing;
 export const availableLocales = farewell.availableLocales;
 export const salutationHonorific = greet.salutationHonorific;
@@ -31,7 +31,7 @@ export {
     supportedFormats,
     type DecodedImage,
     type ImageMime,
-} from '@corbet-foss/cink';
+} from '@corbet-labs/cink';
 // availableLocales stays with its owner: cnice::farewell's
 // availableLocales is already re-exported above, and salutation coverage
 // questions are answered by the re-exported salutationSupported above.
@@ -41,7 +41,7 @@ export {
     shortDate,
     monthYear,
     isValidDate,
-} from '@corbet-foss/cdate';
+} from '@corbet-labs/cdate';
 // Re-exported `greet` consts above (recipientSalutationWarning,
 // honorificWarning, salutationSupported) are module-scope and used directly
 // below; covered-locale rendering itself goes through greet.salutation.

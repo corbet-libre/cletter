@@ -2,12 +2,12 @@
 
 Copyright 2026 Julian Y. Richard Corbet.
 
-cletter 0.4.0 is licensed under **LGPL-3.0-only WITH LGPL-3.0-linking-exception**.
+cletter 0.4.1 is licensed under **LGPL-3.0-only WITH LGPL-3.0-linking-exception**.
 This covers the library's own Rust, JavaScript, Python and Typst
 implementations, shared tables, tests and documentation. The complete
 [LGPL version 3](LICENSES/LGPL-3.0-only.txt) incorporates
 [GPL version 3](LICENSES/GPL-3.0-only.txt); the
-[linking exception](<LICENSES/LGPL-3.0-only WITH LGPL-3.0-linking-exception.txt>) waives the
+[linking exception](LICENSES/LGPL-3.0-linking-exception.txt) waives the
 Minimal Corresponding Source, Minimal Application Code and
 installation-information duties (LGPLv3 §§4d/4e) for combined works that
 link statically or dynamically.

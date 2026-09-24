@@ -3,8 +3,8 @@
 Crow runs `.ci/ccid.toml` through the pinned native `ccid` command library.
 The repository commands also work on a suitably provisioned build host.
 Workstations stage committed source and inspect evidence; they do not compile it.
-GitHub Actions has an equivalent manual public-source check route; publication
-remains a separate operation.
+GitHub Actions has an equivalent manual public-source check route, which the
+tag-triggered release workflow reuses as its credential-free preparation job.
 
 ## Manual GitHub Actions route
 
@@ -30,8 +30,10 @@ fail visibly when their exact dependency versions have not been published.
 This manual workflow is not an expanded automatic provider mapping. Keep any
 existing `.ci/providers.toml` pilot unchanged until equivalent hosted execution
 and fallback identity are proved. Confirm unavailable execution before falling
-back to Crow; a failed test is not provider unavailability. Publication remains
-separate from these credential-free preparation/check jobs.
+back to Crow; a failed test is not provider unavailability. `release.yml` calls
+it through `workflow_call` with the release selectors; the call runs at the
+release commit, so `hosted-run.json` still records this workflow's exact bytes
+and the tag's source archive. Publication stays in a separate job.
 
 ## Publishing prepared artifacts
 
@@ -39,31 +41,37 @@ The checked-in `.ci/publish.py` adapter uses the exact shared publisher resource
 from the release workflow's verified ccid archive. It imports existing source
 archives, preparation receipts and tested packages into one reviewed bundle;
 producer identities remain distinct from later CI/publisher commits. See the
-[shared import and publication contract](https://github.com/corbet-infra/ccid/blob/main/adapters/registry-publish.md).
+[shared import and publication contract](https://github.com/corbet-libs/ccid/blob/27c248aefa3c7198be6716a884d290c717774b21/adapters/registry-publish.md).
 
-The manual Crow `release` workflow reconciles existing bytes by default. Supply
+A pushed `vX.Y.Z` tag runs `.github/workflows/release.yml` (see
+[releasing](../docs/releasing.md)). `prepare` calls `ci.yml` without credentials;
+`bundle` imports its exact packages for every registry, inspects the bundle and
+creates the GitHub release with `publication-bundle.tar`; `publish` alone gets
+`id-token: write`. It reconciles all channels, publishes missing Cargo packages
+through `rust-lang/crates-io-auth-action` and JSR through GitHub OIDC, and
+reports npm and PyPI as deferred until their trusted publisher rules exist.
+Those two are uploaded from the same release bundle by an operator with registry
+tokens outside hosted CI. Dispatching the workflow with `tag` publishes from an
+existing release bundle; dispatching it without `tag` rehearses the bundle.
+The existing release/tag is verified before uploads. Persistent local and
+immutable GitHub release journals prevent retries after an ambiguous upload,
+including across providers; no registry restriction is automatically changed.
+
+The manual Crow `release` workflow remains the fallback route. Supply
 `RELEASE_BUNDLE` (an existing worker file), `RELEASE_BUNDLE_SHA256`, and optionally
 `RELEASE_CHANNELS`; select exactly one registry with `RELEASE_OPERATION=publish`
 for an intended upload. `publish` with `all` is refused; status can inspect all.
 Bundle inspection has no credentials. Registry status loads only the GitHub
 release token; publication loads that token and the selected registry
 token in its own guarded step. Missing tokens for other registries do
-not block inspection, status or a selected upload. Python publication requires
-`PYPI_TOKEN`; its absence is an explicit missing prerequisite, not a skipped
-success. No build occurs with these credentials.
-
-The manual GHA `release.yml` workflow consumes the same exact bundle from a public
-release asset. It can reconcile all public channels and publish Cargo through
-configured short-lived OIDC. Token-backed npm, JSR and PyPI publication stays on
-Crow. The existing release/tag is verified before uploads. Persistent local and
-immutable GitHub release journals prevent retries after an ambiguous upload,
-including across providers; no registry restriction is automatically changed.
+not block inspection, status or a selected upload. No build occurs with these
+credentials. Crow and GitHub Actions pin the same publisher revision.
 
 These adapters do not expand automatic provider mappings, create release tags,
 or establish hosted/native execution proof. Existing check recipes and the
 release publisher have separate explicit tool pins. Select `release-config` to
-check adapter identities, Python/shell syntax and manual credential boundaries
-without compiling products or accessing registries. Actionlint is required: Crow
+check adapter identities, the tag trigger, Python/shell syntax and per-job
+credential boundaries without compiling products or accessing registries. Actionlint is required: Crow
 uses the existing tool on PATH or in the Nix store; hosted setup provisions it
 only for this selector. Evidence records its actual path and version. The
 repository checker installs nothing and fails if the required tool is absent.
@@ -77,7 +85,7 @@ only for matching source, dependency closure, tools, configuration and environme
 | Selector | Coverage |
 | --- | --- |
 | `metadata` | Version alignment and byte-for-byte generated assets |
-| `release-config` | Manual release adapter contract and Python/shell syntax; required provisioned Actionlint |
+| `release-config` | Release adapter contract (tag trigger, job permissions, OIDC routes, publisher pin) and Python/shell syntax; required provisioned Actionlint |
 | `fmt` | Rust formatting only |
 | `rust` | Locked Rust tests including doctests, formatting, Clippy with denied warnings |
 | `rust-msrv` | Minimum Rust tests; Crow requires provisioned 1.94.0, while hosted setup reads `Cargo.toml` |
@@ -140,7 +148,7 @@ This is integration evidence, not registry package verification. `rust-package`
 always uses normal registry resolution and requires published dependencies.
 Neither the source tree nor the released manifest acquires local path patches.
 
-After the four sibling versions declared in `Cargo.toml` and the JavaScript
+After the three sibling versions declared in `Cargo.toml` and the JavaScript
 `package.json` are published on crates.io and npm, prepare cletter's registry locks:
 
 ```sh
@@ -149,7 +157,7 @@ crow-ci run --repo . --workflow ccid \
   --var ARTIFACT_ROOT=/absolute/persistent/release-artifacts
 ```
 
-This selector runs targeted `cargo update -p cgreet -p cfarewell -p cdate -p cink`
+This selector runs targeted `cargo update -p cnice -p cdate -p cink`
 and `bun install --lockfile-only --ignore-scripts` in a copied source tree. It
 requires the exact declared sibling crate versions and registry checksums; it
 does not use local dependency patches or build packages. The exported `Cargo.lock`

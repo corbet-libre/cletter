@@ -2,6 +2,8 @@ name: Manual selected checks
 
 # Public source and registry consumers only. Publication credentials stay outside
 # this workflow; Crow handles inputs that must remain on owned infrastructure.
+# release.yml calls it as its credential-free preparation job, so the receipts
+# describe the exact release source and this workflow file's bytes.
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +12,16 @@ on:
         type: string
         required: true
         default: metadata,rust
+  workflow_call:
+    inputs:
+      checks:
+        description: Comma-separated .ci/ccid.toml selectors, in execution order
+        type: string
+        required: true
+    outputs:
+      artifact:
+        description: Name of the uploaded package and receipt artifact
+        value: ${{ jobs.checks.outputs.artifact }}
 
 permissions:
   contents: read
@@ -19,6 +31,8 @@ jobs:
     if: github.event.repository.private == false
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    outputs:
+      artifact: selected-checks-${{ github.sha }}-${{ github.run_attempt }}
     env:
       REQUESTED_CHECKS: ${{ inputs.checks }}
       RUSTUP_TOOLCHAIN: stable
@@ -86,7 +100,7 @@ jobs:
               environment.write('SOURCE_SHA256=' + os.environ['SOURCE_SHA256'] + '\n')
               environment.write('SELECTED_CHECKS=' + ','.join(selectors) + '\n')
               environment.write('MINIMUM_RUST=' + minimum + '\n')
-          js = Path('js/@corbet-foss') / package['name']
+          js = Path('js/@corbet-labs') / package['name']
           inputs = [Path('Cargo.toml'), Path('Cargo.lock'), js / 'package.json', js / 'bun.lock', js / 'jsr.json', Path('py/pyproject.toml'), Path('typst.toml')]
           directory = Path(os.environ['ARTIFACT_ROOT'])
           directory.mkdir(parents=True, exist_ok=True)

@@ -26,9 +26,10 @@ mkdirSync('LICENSES', { recursive: true });
 for (const file of readdirSync('../../../LICENSES')) {
     copyFileSync(`../../../LICENSES/${file}`, `LICENSES/${file}`);
 }
-// The standalone browser module embeds the sibling implementations.
-for (const name of ['cgreet', 'cfarewell', 'cink', 'cdate']) {
-    cpSync(`node_modules/@corbet-foss/${name}/LICENSES`, `LICENSES/vendor/${name}`, { recursive: true });
+// The standalone browser module embeds the sibling implementations; ship
+// the license texts of exactly the packages it depends on.
+for (const dependency of Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies ?? {})) {
+    cpSync(`node_modules/${dependency}/LICENSES`, `LICENSES/vendor/${dependency.split('/').pop()}`, { recursive: true });
 }
 // Keep the registry page and the GitHub product page in sync.
 copyFileSync('../../../README.md', 'README.md');

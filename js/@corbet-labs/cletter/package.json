@@ -1,6 +1,6 @@
 {
-  "name": "@corbet-foss/cletter",
-  "version": "0.4.0",
+  "name": "@corbet-labs/cletter",
+  "version": "0.4.1",
   "description": "Locale-correct business correspondence: composes cnice, cink and cdate. Mirrors the cletter Rust crate release line.",
   "license": "LGPL-3.0-only WITH LGPL-3.0-linking-exception",
   "publishConfig": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/corbet-foss/cletter.git",
-    "directory": "js/@corbet-foss/cletter"
+    "directory": "js/@corbet-labs/cletter"
   },
   "type": "module",
   "main": "./dist/index.cjs",
@@ -46,9 +46,9 @@
     "build": "bun ./scripts/build.mjs"
   },
   "dependencies": {
-    "@corbet-foss/cnice": "^0.1.0",
-    "@corbet-foss/cdate": "^0.3.1",
-    "@corbet-foss/cink": "^0.2.0"
+    "@corbet-labs/cnice": "0.1.2",
+    "@corbet-labs/cdate": "0.3.2",
+    "@corbet-labs/cink": "0.2.1"
   },
   "devDependencies": {
     "@types/node": "25.8.0",

@@ -10,9 +10,9 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
 name = "cdate"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b08805061eaa94a19bd1caf0c7ef90f4d2f7772e45ba2d04b3b6e97ff971d3e5"
+checksum = "1260c6b825be63be66ab787be6ff3453c0891247879d63aa0bf20877f3cc1516"
 dependencies = [
  "serde",
  "serde_json",
@@ -20,9 +20,9 @@ dependencies = [
 
 [[package]]
 name = "cink"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b5bf3a828019f08c1ce43751a03652e48413b82fb10725b057a7b686d0dc2fa"
+checksum = "901fbc6f8a9bb20c9821461fd03e623f5592e4c68a65d4c3fe402fd4e650ef06"
 dependencies = [
  "base64",
  "serde",
@@ -31,7 +31,7 @@ dependencies = [
 
 [[package]]
 name = "cletter"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "cdate",
  "cink",
@@ -42,7 +42,9 @@ dependencies = [
 
 [[package]]
 name = "cnice"
-version = "0.1.0"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c35a9ce2eab61c0de6b9d61df001a75fd15591698dc511e928b4332f09e98534"
 dependencies = [
  "serde",
  "serde_json",

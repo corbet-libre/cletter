@@ -7,6 +7,8 @@ node_modules/
 # Anchored: keep the committed root and py/ notices visible; ignore generated copies.
 !/LICENSES/
 !/py/LICENSES/
+# Vendored sibling license texts ship with the Typst package and the JSR bundle.
+!/typst/vendor/*/LICENSES/
 *.tgz
 __pycache__/
 *.pyc

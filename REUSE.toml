@@ -88,8 +88,3 @@ precedence = "override"
 SPDX-FileCopyrightText = "Canonical"
 SPDX-License-Identifier = "LGPL-3.0-linking-exception"
 
-[[annotations]]
-path = ["LICENSES/LGPL-3.0-only WITH LGPL-3.0-linking-exception.txt", "py/LICENSES/LGPL-3.0-only WITH LGPL-3.0-linking-exception.txt"]
-precedence = "override"
-SPDX-FileCopyrightText = "Canonical"
-SPDX-License-Identifier = "LGPL-3.0-linking-exception"

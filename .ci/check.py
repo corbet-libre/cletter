@@ -17,7 +17,7 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]
 NAME, VERSION = PACKAGE["name"], PACKAGE["version"]
-JS = ROOT / "js" / "@corbet-foss" / NAME
+JS = ROOT / "js" / "@corbet-labs" / NAME
 
 
 def run(*args, cwd=None, env=None):
@@ -99,7 +99,7 @@ def javascript():
 
 
 def npm_tarball():
-    return JS / f"corbet-foss-{NAME}-{VERSION}.tgz"
+    return JS / f"corbet-labs-{NAME}-{VERSION}.tgz"
 
 
 def js_package():
@@ -240,14 +240,14 @@ def resolve_dependencies():
     crate_manifest = tomllib.loads((ROOT / "Cargo.toml").read_text())
     if "patch" in crate_manifest or "replace" in crate_manifest:
         raise ValueError("Registry lock resolution must not use Cargo patches or replacements")
-    siblings = ("cgreet", "cfarewell", "cdate", "cink")
+    siblings = ("cnice", "cdate", "cink")
     selected = []
     for name in siblings:
         dependency = crate_manifest["dependencies"][name]
         if not isinstance(dependency, str):
             raise ValueError("Sibling Cargo dependencies must declare registry versions directly")
         selected.extend(("-p", name))
-    # Update only the four sibling dependency closures, preserving unrelated pins.
+    # Update only the sibling dependency closures, preserving unrelated pins.
     run("cargo", "update", *selected)
     locked = tomllib.loads((ROOT / "Cargo.lock").read_text())["package"]
     for name in siblings:
@@ -269,11 +269,11 @@ def published(channel):
                 shutil.copyfile(JS / "scripts" / name, scratch / name)
             (scratch / "package.json").write_text('{"private":true,"type":"module"}\n')
         if channel == "npm":
-            run("npm", "install", "--ignore-scripts", "--no-audit", "--no-fund", f"@corbet-foss/{NAME}@{VERSION}", cwd=scratch)
+            run("npm", "install", "--ignore-scripts", "--no-audit", "--no-fund", f"@corbet-labs/{NAME}@{VERSION}", cwd=scratch)
             run("node", "consumer.mjs", cwd=scratch)
             run("bun", "consumer.mjs", cwd=scratch)
         elif channel == "jsr":
-            run("deno", "eval", "--node-modules-dir=auto", "--min-dep-age=0", f"import * as api from 'jsr:@corbet-foss/{NAME}@{VERSION}'; import {{verify}} from './verify-api.mjs'; verify(api);", cwd=scratch)
+            run("deno", "eval", "--node-modules-dir=auto", "--min-dep-age=0", f"import * as api from 'jsr:@corbet-labs/{NAME}@{VERSION}'; import {{verify}} from './verify-api.mjs'; verify(api);", cwd=scratch)
         elif channel == "python":
             venv = scratch / "consumer"
             run("uv", "venv", venv)
@@ -329,7 +329,7 @@ if __name__ == "__main__":
             source = Path(temporary) / NAME
             shutil.copytree(ROOT, source, ignore=shutil.ignore_patterns(".git", "target", "node_modules", "dist"))
             ROOT = source
-            JS = ROOT / "js" / "@corbet-foss" / NAME
+            JS = ROOT / "js" / "@corbet-labs" / NAME
             CHECKS[arguments.check]()
     else:
         CHECKS[arguments.check]()

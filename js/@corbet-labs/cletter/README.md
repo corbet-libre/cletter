@@ -2,12 +2,12 @@
 
 **Locale-correct correspondence, from salutation to closing.**
 
-[![crates.io](https://img.shields.io/crates/v/cletter.svg)](https://crates.io/crates/cletter) [![npm](https://img.shields.io/npm/v/@corbet-foss/cletter.svg)](https://www.npmjs.com/package/@corbet-foss/cletter) [![PyPI](https://img.shields.io/pypi/v/cletter.svg)](https://pypi.org/project/cletter/) [![Rust API](https://docs.rs/cletter/badge.svg)](https://docs.rs/cletter)
+[![crates.io](https://img.shields.io/crates/v/cletter.svg)](https://crates.io/crates/cletter) [![npm](https://img.shields.io/npm/v/@corbet-labs/cletter.svg)](https://www.npmjs.com/package/@corbet-labs/cletter) [![PyPI](https://img.shields.io/pypi/v/cletter.svg)](https://pypi.org/project/cletter/) [![Rust API](https://docs.rs/cletter/badge.svg)](https://docs.rs/cletter)
 
 Compose a formal letter from deterministic rules: resolve a document locale, address a recipient, write an application subject, format the date, choose a closing, and prepare a handwritten signature image. Rust, JavaScript, and Python share the same conformance vectors.
 
 ```js
-import { salutation } from '@corbet-foss/cletter';
+import { salutation } from '@corbet-labs/cletter';
 
 salutation('de-ch', 'Frau Dr. Müller');
 // Sehr geehrte Frau Dr. Müller
@@ -18,32 +18,32 @@ salutation('de-ch', 'Frau Dr. Müller');
 | Environment | Command |
 | --- | --- |
 | Rust / Cargo | `cargo add cletter` |
-| Python / pip | `python -m pip install cletter==0.4.0` |
-| Python / uv | `uv add cletter==0.4.0` |
-| Node.js / npm | `npm install @corbet-foss/cletter` |
-| pnpm | `pnpm add @corbet-foss/cletter` |
-| Yarn | `yarn add @corbet-foss/cletter` |
-| Bun | `bun add @corbet-foss/cletter` |
-| Deno | `deno add npm:@corbet-foss/cletter` |
+| Python / pip | `python -m pip install cletter==0.4.1` |
+| Python / uv | `uv add cletter==0.4.1` |
+| Node.js / npm | `npm install @corbet-labs/cletter` |
+| pnpm | `pnpm add @corbet-labs/cletter` |
+| Yarn | `yarn add @corbet-labs/cletter` |
+| Bun | `bun add @corbet-labs/cletter` |
+| Deno | `deno add npm:@corbet-labs/cletter` |
 
-The 0.4.0 JavaScript distribution includes compiled ESM, CommonJS,
+The 0.4.1 JavaScript distribution includes compiled ESM, CommonJS,
 TypeScript declarations, and a standalone browser module. Node.js 20+ is
 supported; no TypeScript loader is required.
 
 ```js
 // CommonJS
-const { salutation } = require('@corbet-foss/cletter');
+const { salutation } = require('@corbet-labs/cletter');
 ```
 
 ```html
 <script type="module">
-  import { salutation } from 'https://cdn.jsdelivr.net/npm/@corbet-foss/cletter@0.4.0/dist/browser.js';
+  import { salutation } from 'https://cdn.jsdelivr.net/npm/@corbet-labs/cletter@0.4.1/dist/browser.js';
   console.log(salutation('de-ch', 'Frau Dr. Müller'));
 </script>
 ```
 
 ```typst
-#import "@preview/cletter:0.4.0": salutation, closing
+#import "@preview/cletter:0.4.1": salutation, closing
 
 #salutation("de-ch", "Frau Dr. Müller")
 // Sehr geehrte Frau Dr. Müller
@@ -51,9 +51,9 @@ const { salutation } = require('@corbet-foss/cletter');
 // Freundliche Grüsse
 ```
 
-Python 3.10+ users can install [cletter 0.4.0 from PyPI](https://pypi.org/project/cletter/0.4.0/),
+Python 3.10+ users can install [cletter 0.4.1 from PyPI](https://pypi.org/project/cletter/0.4.1/),
 including its component dependencies. This release line is
-[LGPL-3.0-only WITH LGPL-3.0-linking-exception](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-only%20WITH%20LGPL-3.0-linking-exception.txt);
+[LGPL-3.0-only WITH LGPL-3.0-linking-exception](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-linking-exception.txt);
 the retained 0.2.1 line stays
 [Apache-2.0](https://github.com/corbet-labs/cletter/blob/v0.2.1/LICENSE).
 See the [installation guide](https://github.com/corbet-foss/cletter/blob/main/docs/installation.md)
@@ -140,16 +140,16 @@ for generation, verification, and publication commands.
 
 ## License
 
-Copyright 2026 Julian Y. Richard Corbet. The 0.4.0 release line is licensed
+Copyright 2026 Julian Y. Richard Corbet. The 0.4.1 release line is licensed
 under [LGPL-3.0-only](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-only.txt)
-[WITH LGPL-3.0-linking-exception](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-only%20WITH%20LGPL-3.0-linking-exception.txt),
+[WITH LGPL-3.0-linking-exception](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-linking-exception.txt),
 with the incorporated [GPL version 3](https://github.com/corbet-foss/cletter/blob/main/LICENSES/GPL-3.0-only.txt).
 Combined works may link statically or dynamically without relinking duties;
 library modifications stay LGPL. Applications can use a different license
 subject to the LGPL's conditions.
 Previously released and already prepared distributions retain their original
 grants. The installation examples above refer to those available releases;
-0.4.0 is published to registries.
+0.4.1 is published to registries.
 
 The existing cdate, cfarewell and cink Typst snapshots remain Apache-2.0;
 the cgreet snapshot remains MIT OR Apache-2.0. Their files and notices

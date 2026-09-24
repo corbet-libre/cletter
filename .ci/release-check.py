@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the manual release adapter contract without builds, network or secrets."""
+"""Check the release adapter contract without builds, network or secrets."""
 import ast
 import hashlib
 import json
@@ -64,6 +64,13 @@ def check_crow_secrets(source, package):
                     "Release executors must reuse the same verified publisher identity and commands")
 
 
+def workflow_jobs(source):
+    """Split a workflow's top-level jobs into {name: block} without a YAML parser."""
+    body = source.split("\njobs:\n", 1)[1]
+    parts = re.split(r"^  ([A-Za-z0-9_-]+):\n", body, flags=re.M)
+    return dict(zip(parts[1::2], parts[2::2]))
+
+
 def main():
     paths = [".ci/publish.py", ".ci/release-check.py", ".ci/ccid.toml", ".crow/release.yaml",
              ".github/workflows/release.yml", ".github/workflows/ci.yml"]
@@ -84,15 +91,33 @@ def main():
     crow, hosted = files[".crow/release.yaml"], files[".github/workflows/release.yml"]
     pins = [re.findall(r"^\s+CCID_REVISION:\s*['\"]?([0-9a-f]{40})['\"]?\s*$", value, re.M) for value in (crow, hosted)]
     require(len(pins[0]) == 1 and pins[0] == pins[1], "Release routes must pin the same reviewed publisher revision")
-    require("ref: " + pins[0][0] in hosted, "Hosted checkout differs from the pinned publisher")
+    require(hosted.count("repository: corbet-libs/ccid\n") == hosted.count("ref: ${{ env.CCID_REVISION }}\n") >= 1
+            and "ref: " not in hosted.replace("ref: ${{ env.CCID_REVISION }}", ""),
+            "Hosted checkout differs from the pinned publisher")
     require("event: manual" in crow and "branch: main" in crow and "--check release" in crow,
             "Crow publication must remain a manual main-branch release command")
-    require("workflow_dispatch:" in hosted and "github.event.repository.private == false" in hosted
-            and "github.ref == 'refs/heads/main'" in hosted, "Hosted release requires public main source")
+    # One pushed vX.Y.Z tag is the release trigger; dispatch re-runs or rehearses.
+    require(re.search(r"^on:\n  push:\n    tags: \['v\*\.\*\.\*'\]\n  workflow_dispatch:\n", hosted, re.M)
+            and "branches:" not in hosted and "pull_request" not in hosted
+            and "github.event.repository.private == false" in hosted, "Hosted release requires public tagged source")
     require("secrets." not in hosted and all(name not in hosted for name in ("NPM_TOKEN", "JSR_TOKEN", "PYPI_TOKEN")),
             "Long-lived registry secrets belong only to the Crow publication step")
-    require("RELEASE_CARGO_AUTH: trusted" in hosted and "steps.authentication.outputs.token" in hosted
-            and '"$RELEASE_CHANNELS" != cargo' in hosted, "Hosted publication must use the selected Cargo OIDC route")
+    jobs = workflow_jobs(hosted)
+    require(set(jobs) == {"prepare", "bundle", "publish"}, "Unexpected hosted release jobs")
+    require("uses: ./.github/workflows/ci.yml\n" in jobs["prepare"] and not re.search(r":\s*write\b", jobs["prepare"])
+            and "id-token" not in jobs["bundle"] and "contents: write" in jobs["bundle"],
+            "Preparation and bundling must run without registry credentials")
+    require("id-token: write" in jobs["publish"] and hosted.count("id-token") == 1,
+            "Only the publication job may request OIDC tokens")
+    publish = jobs["publish"]
+    require("RELEASE_CARGO_AUTH: trusted" in publish and "steps.authentication.outputs.token" in publish
+            and "RELEASE_JSR_AUTH: trusted" in publish, "Hosted publication must use the Cargo and JSR OIDC routes")
+    # npm and PyPI stay operator uploads until their trusted publisher rules exist.
+    require(all(name not in hosted for name in ("RELEASE_NPM_AUTH", "RELEASE_PYPI_AUTH")),
+            "npm and PyPI have no trusted publisher rule yet")
+    require(publish.count("python3 .ci/publish.py publish") == 2
+            and all("RELEASE_CHANNELS: " + channel + "\n" in publish for channel in ("cargo", "jsr")),
+            "Each hosted upload must select exactly one OIDC registry")
     require("from_secret: " + package + "_release_pypi_token" in crow, "Crow PyPI route is missing")
     check_crow_secrets(crow, package)
     require("rustup" not in crow and "cargo build" not in crow and "cargo test" not in crow,
@@ -100,11 +125,17 @@ def main():
     checks = files[".github/workflows/ci.yml"]
     require("'release'" in checks and "release-config) python3 .ci/release-check.py" in checks,
             "Hosted selected checks must route release configuration separately from publication")
+    require("workflow_call:" in checks and "secrets" not in checks and not re.search(r":\s*write\b", checks),
+            "Selected checks must stay a credential-free reusable preparation workflow")
     for path in (".crow/release.yaml", ".github/workflows/release.yml", ".github/workflows/ci.yml"):
         source = files[path]
-        require(not re.search(r"^\s+(?:push|pull_request):", source, re.M), "These adapters must remain manual")
+        # Only release.yml's tag trigger may start work automatically.
+        automatic = re.findall(r"^ +(?:push|pull_request\w*|schedule):", source, re.M)
+        require(automatic == (["  push:"] if path == ".github/workflows/release.yml" else []),
+                "Only a pushed release tag may start an adapter automatically")
         for action in re.findall(r"^\s+uses:\s*(\S+)", source, re.M):
-            require(re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", action), "Hosted actions require exact revisions")
+            require(action == "./.github/workflows/ci.yml" or re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", action),
+                    "Hosted actions require exact revisions")
         check_shell_blocks(source, path)
     actionlint = shutil.which("actionlint")
     if not actionlint:
@@ -114,7 +145,7 @@ def main():
     version = subprocess.check_output([actionlint, "-version"], text=True).strip()
     subprocess.run([actionlint, ".github/workflows/ci.yml", ".github/workflows/release.yml"], cwd=ROOT, check=True)
     print(json.dumps({"repository": repository, "publisher_revision": pins[0][0],
-                      "checks": ["python syntax", "shell syntax", "manual release contract"],
+                      "checks": ["python syntax", "shell syntax", "release contract"],
                       "actionlint": {"path": actionlint, "version": version, "status": "passed"},
                       "files": {path: hashlib.sha256(value.encode()).hexdigest() for path, value in files.items()}}, sort_keys=True))
 
