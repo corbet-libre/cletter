@@ -94,3 +94,29 @@ commands = [["python3", ".ci/check.py", "typst-family-preview"]]
 [checks.published-python-release]
 kind = "commands"
 commands = [["python3", ".ci/published-python-release.py"]]
+
+# verify aggregates the cached subset of the hosted Linux route (ci.yml case branches):
+# rust + rust-msrv + ccid-defined standalone packaging/integration selectors in dependency
+# order. Registry/live-read selectors run FRESH after the cached verify via `ccid check`
+# (never `cached`): published-npm/jsr/python (+ resolve-dependencies for cletter;
+# licenses + jsr-registry + python-registry for ccht). Publication and artifact-manifest
+# selectors (release, rust-dependencies, typst-preview, registry-resolved previews) stay
+# defined and callable via the old ccid route; they are not in the default job.
+# No cache_inputs (broad default); no cache_outputs (packaging receipts land in ARTIFACT_ROOT,
+# outside the repo tree); no cache_env (no shells; dynamic paths must not key the cache).
+# No deny.toml ships, so there is no advisories check; freshness is carried by the
+# per-selector fresh checks above instead.
+
+[checks.verify]
+kind = "commands"
+commands = [["bash", ".ci/verify.sh"]]
+cache_tools = [["rustc", "-vV"], ["cargo", "--version"], ["rustup", "run", "1.94.0", "rustc", "-vV"], ["rustup", "run", "1.94.0", "cargo", "--version"], ["python3", "--version"], ["node", "--version"], ["bun", "--version"], ["npm", "--version"], ["deno", "--version"], ["uv", "--version"]]
+
+[render]
+tool_revision = "81ebac8e86e20bc93b69d5e912bbcb0c0d036d58"
+
+[jobs.verify]
+scheduler = "crow"
+checks = ["verify", "published-npm", "published-jsr", "published-python", "resolve-dependencies"]
+workflow = "repository-jobs"
+command = ["bash", ".ci/run-cached.sh"]

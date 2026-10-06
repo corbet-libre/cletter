@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec 2>&1
+export CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-2}"
+export CARGO_TERM_COLOR="${CARGO_TERM_COLOR:-always}"
+export RUST_TEST_THREADS="${RUST_TEST_THREADS:-2}"
+export RUSTUP_TOOLCHAIN="${RUSTUP_TOOLCHAIN:-stable}"
+export UV_PYTHON="${UV_PYTHON:-python3}"
+export UV_PYTHON_DOWNLOADS="${UV_PYTHON_DOWNLOADS:-never}"
+: "${CI_COMMIT_SHA:?verify requires the exact source revision}"
+: "${ARTIFACT_ROOT:?verify requires an absolute ARTIFACT_ROOT}"
+[[ "$ARTIFACT_ROOT" = /* ]] || { echo "ARTIFACT_ROOT must be absolute" >&2; exit 2; }
+# Minimum supported Rust, derived exactly like the hosted plan step.
+MINIMUM_RUST="$(python3 -c 'import re,tomllib;v=tomllib.load(open("Cargo.toml","rb"))["package"]["rust-version"];v=v if v.count(".")==2 else v+".0";assert __import__("re").fullmatch(r"\d+\.\d+\.\d+",v);print(v)')"
+test "$MINIMUM_RUST" = "1.94.0" || { echo "Cargo rust-version drifted: $MINIMUM_RUST" >&2; exit 2; }
+# Hosted route mirror: .github/workflows/ci.yml case branches (rust/fmt/rust-msrv/release-config)
+# plus every ccid-defined standalone packaging/integration selector in dependency order
+# (js-package before js-pnpm/js-yarn/js-bun; packaging before registry reads).
+# Excluded by hosted policy, kept callable: release, rust-dependencies, typst-preview
+# (this repo also: typst-conformance, resolve-dependencies).
+python3 .ci/check.py metadata
+cargo fmt --all -- --check
+cargo test --locked
+cargo clippy --all-targets --locked -- -D warnings
+# RUSTUP_TOOLCHAIN alone is NOT enough: PATH carries the stable cargo binary
+# directly (not a rustup shim), so resolve the MSRV compiler explicitly in a
+# scoped subshell (stable PATH restored on exit). Exact CI test flags.
+(
+  MSRV_RUSTC="$(rustup which --toolchain "$MINIMUM_RUST" rustc)"
+  MSRV_CARGO="$(rustup which --toolchain "$MINIMUM_RUST" cargo)"
+  MSRV_BIN="$(dirname "$MSRV_RUSTC")"
+  export RUSTC="$MSRV_RUSTC" CARGO="$MSRV_CARGO"
+  export PATH="$MSRV_BIN:$PATH" RUSTUP_TOOLCHAIN="$MINIMUM_RUST"
+  cargo test --locked
+)
+python3 .ci/check.py javascript
+python3 .ci/check.py js-package
+python3 .ci/check.py js-pnpm
+python3 .ci/check.py js-yarn
+python3 .ci/check.py js-bun
+python3 .ci/check.py python-package
+python3 .ci/check.py typst-package
+python3 .ci/check.py typst-conformance
+python3 .ci/check.py rust-package
+python3 .ci/release-check.py
