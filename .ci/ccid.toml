@@ -113,7 +113,7 @@ commands = [["bash", ".ci/verify.sh"]]
 cache_tools = [["rustc", "-vV"], ["cargo", "--version"], ["rustup", "run", "1.94.0", "rustc", "-vV"], ["rustup", "run", "1.94.0", "cargo", "--version"], ["python3", "--version"], ["node", "--version"], ["bun", "--version"], ["npm", "--version"], ["deno", "--version"], ["uv", "--version"]]
 
 [render]
-tool_revision = "81ebac8e86e20bc93b69d5e912bbcb0c0d036d58"
+tool_revision = "78a4e05b4e1cb25aaeba3966951564d74277bcbd"
 
 [jobs.verify]
 scheduler = "crow"

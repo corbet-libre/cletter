@@ -20,10 +20,9 @@ toolchains=${CI_TOOLCHAIN_ROOT:-$cache_root/ccid-cached/toolchains}
 mkdir -p "$state" "$toolchains"
 exec 9>"$state/lock"
 flock -w "${CI_TIMEOUT:-2700}" 9
+export YARN_CACHE_FOLDER="$state/yarn-cache"; mkdir -p "$YARN_CACHE_FOLDER"
 mkdir -p "$state/moon-cache/hashes" "$state/moon-cache/outputs" "$state/moon-home"
 mkdir -p .moon/cache
-ln -sfn "$state/moon-cache/hashes" .moon/cache/hashes
-ln -sfn "$state/moon-cache/outputs" .moon/cache/outputs
 # Binding gates: node+npm serve check.py js-package/managers (npx fetches pinned pnpm@10/yarn@1
 # per-run; bun.lock stays frozen); bun serves install/typecheck/conformance; deno serves
 # js-package dry-run/published-jsr; uv+python3 serve hatchling wheel/sdist + typst==0.15.0 packaging.
@@ -40,15 +39,13 @@ export CI_JOBS="${CI_JOBS:-2}" CARGO_BUILD_JOBS="${CI_JOBS:-2}"
 export RUST_TEST_THREADS="${CI_TEST_THREADS:-2}"
 export UV_PYTHON=python3 UV_PYTHON_DOWNLOADS=never
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
-if [ -n "${GIT_CONFIG_COUNT:-}" ]; then
-  echo 'GIT_CONFIG_COUNT is already set; refusing to overwrite job git config' >&2
-  exit 2
-fi
-export GIT_CONFIG_COUNT=2
-export GIT_CONFIG_KEY_0='url.https://git.corbet.ch/corbet-libs/.insteadOf'
-export GIT_CONFIG_VALUE_0='https://github.com/corbet-libs/'
-export GIT_CONFIG_KEY_1='url.https://git.corbet.ch/corbet-foss/.insteadOf'
-export GIT_CONFIG_VALUE_1='https://github.com/corbet-foss/'
+# Append to any git config the verified runtime already supplies through the environment.
+git_config_base=${GIT_CONFIG_COUNT:-0}
+export GIT_CONFIG_COUNT=$((git_config_base + 2))
+export "GIT_CONFIG_KEY_$((git_config_base + 0))=url.https://git.corbet.ch/corbet-libs/.insteadOf"
+export "GIT_CONFIG_VALUE_$((git_config_base + 0))=https://github.com/corbet-libs/"
+export "GIT_CONFIG_KEY_$((git_config_base + 1))=url.https://git.corbet.ch/corbet-foss/.insteadOf"
+export "GIT_CONFIG_VALUE_$((git_config_base + 1))=https://github.com/corbet-foss/"
 # Shared-first toolchain lock: jobs share a provisioned toolchain and take
 # exclusive only to provision missing pieces. Same lock file, so old
 # whole-job-exclusive runners interoperate (they just serialize).
