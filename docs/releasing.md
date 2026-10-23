@@ -52,8 +52,8 @@ new patch version.
 
 ## Operator upload for npm and PyPI
 
-Until npm and PyPI trust `corbet-foss/cletter:release.yml`, upload them from the
-release bundle on a workstation. No build runs; the publisher only verifies and
+Until npm and PyPI trust `corbet-foss/cletter:release.yml`, upload them manually from the
+release bundle. No build runs; the publisher only verifies and
 uploads the reviewed bytes. It needs `GH_TOKEN` with `contents: write` on this
 repository (for the publication journals), and `NPM_TOKEN` or `PYPI_TOKEN` for
 the selected registry:
@@ -72,9 +72,9 @@ export CCID_REVISION="$rev" CI_TOOL_ARCHIVE="$PWD/publisher.tar" \
   RELEASE_BUNDLE_SHA256="$(cut -d ' ' -f 1 publication-bundle.tar.sha256)" \
   RELEASE_JOURNAL_ROOT="$PWD/journals" GH_TOKEN="$(gh auth token)"
 python3 source/.ci/publish.py status
-NPM_TOKEN="$(sops --decrypt ~/agents/knowledge/secrets/npm.yml | yq -r .api_token)" \
+NPM_TOKEN="<token from your secret store>" \
   python3 source/.ci/publish.py publish --channels npm
-PYPI_TOKEN="$(sops --decrypt ~/agents/knowledge/secrets/pypi.yml | yq -r .api_token)" \
+PYPI_TOKEN="<token from your secret store>" \
   python3 source/.ci/publish.py publish --channels pypi
 ```
 

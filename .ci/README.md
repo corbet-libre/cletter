@@ -2,7 +2,7 @@
 
 Crow runs `.ci/ccid.toml` through the pinned native `ccid` command library.
 The repository commands also work on a suitably provisioned build host.
-Workstations stage committed source and inspect evidence; they do not compile it.
+The dispatcher stages the committed source and reports evidence; builds run only in CI.
 GitHub Actions has an equivalent manual public-source check route, which the
 tag-triggered release workflow reuses as its credential-free preparation job.
 
