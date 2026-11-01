@@ -27,18 +27,6 @@ SPDX-FileCopyrightText = "2026 Julian Y. Richard Corbet"
 SPDX-License-Identifier = "LGPL-3.0-only WITH LGPL-3.0-linking-exception"
 
 [[annotations]]
-path = "typst/vendor/cgreet/**"
-precedence = "override"
-SPDX-FileCopyrightText = "2026 Julian Y. Richard Corbet"
-SPDX-License-Identifier = "MIT OR Apache-2.0"
-
-[[annotations]]
-path = ["typst/vendor/cdate/**", "typst/vendor/cfarewell/**", "typst/vendor/cink/**"]
-precedence = "override"
-SPDX-FileCopyrightText = "2026 Julian Y. Richard Corbet"
-SPDX-License-Identifier = "Apache-2.0"
-
-[[annotations]]
 path = "py/LICENSES/Apache-2.0.txt"
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Julian Y. Richard Corbet"

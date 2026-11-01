@@ -2,7 +2,10 @@
 
 Usage: python3 scripts/typst-conformance.py FAMILY_ROOT [cletter cgreet ...]
 Uses typst or tinymist already on PATH, or an installed Python typst module;
-performs no installation.
+performs no installation. cletter imports cnice, cdate and cink as packages:
+each checkout under FAMILY_ROOT is staged as its `@preview` package, the same
+files its crate registers through `<name>::typst::FILES`, so no registry
+lookup happens.
 """
 import json
 from pathlib import Path
@@ -10,8 +13,24 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 
 root = Path(sys.argv[1]).resolve()
+FAMILY = ("cnice", "cdate", "cink")
+
+
+def stage_packages(directory):
+    """Install the family checkouts as offline `@preview` packages."""
+    for name in FAMILY:
+        source = root / name
+        manifest = tomllib.loads((source / "typst.toml").read_text())["package"]
+        target = directory / "preview" / name / manifest["version"]
+        target.mkdir(parents=True)
+        shutil.copy2(source / "typst.toml", target / "typst.toml")
+        for item in ("typst", "tables"):
+            if (source / item).is_dir():
+                shutil.copytree(source / item, target / item)
+
 libraries = sys.argv[2:] or ["cnice", "cdate", "cletter"]
 compiler = shutil.which("typst") or shutil.which("tinymist")
 if compiler:
@@ -88,10 +107,13 @@ for library in libraries:
     with tempfile.TemporaryDirectory(prefix=".typst-conformance-", dir=root) as temp:
         entry = Path(temp) / "vectors.typ"
         entry.write_text("\n".join(lines) + "\n")
+        packages = Path(temp) / "packages"
+        stage_packages(packages)
         if compiler:
-            subprocess.run([compiler, "compile", "--root", str(root), str(entry), str(Path(temp) / "vectors.pdf")], check=True)
+            subprocess.run([compiler, "compile", "--root", str(root), "--package-path", str(packages),
+                            str(entry), str(Path(temp) / "vectors.pdf")], check=True)
         else:
-            pdf = typst.compile(str(entry), root=str(root))
+            pdf = typst.compile(str(entry), root=str(root), package_path=str(packages))
             if not pdf.startswith(b"%PDF"):
                 raise RuntimeError("Typst compiler did not produce a PDF")
     print(f"Typst {library}: {count} vectors passed", flush=True)

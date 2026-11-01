@@ -1,6 +1,6 @@
 {
   "name": "@corbet-labs/cletter",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Locale-correct business correspondence: composes cnice, cink and cdate. Mirrors the cletter Rust crate release line.",
   "license": "LGPL-3.0-only WITH LGPL-3.0-linking-exception",
   "publishConfig": {

@@ -1,9 +1,12 @@
 #import "generated/tables.typ": locales-table, countries-table
-#import "vendor/cnice/typst/greet.typ" as cnice-greet
-#import "vendor/cnice/typst/greet.typ": salutation-last-name, salutation-honorific, salutation-titles, salutation-surname, recipient-salutation-warning, honorific-warning, is-supported
-#import "vendor/cnice/typst/farewell.typ": closing, available-locales
-#import "vendor/cdate/typst/date.typ": long-date, medium-date, short-date, month-year, is-valid-date
-#import "vendor/cink/typst/ink.typ": signature-image
+// Family packages at the minimum versions Cargo.toml requires. Rust hosts
+// register them with cletter::typst::packages(), which pins these imports
+// to the versions Cargo resolved.
+#import "@preview/cnice:0.1.3": farewell as cnice-farewell, greet as cnice-greet
+#import cnice-greet: salutation-last-name, salutation-honorific, salutation-titles, salutation-surname, recipient-salutation-warning, honorific-warning, is-supported
+#import cnice-farewell: closing, available-locales
+#import "@preview/cdate:0.3.3": long-date, medium-date, short-date, month-year, is-valid-date
+#import "@preview/cink:0.2.2": signature-image
 
 /// Lowercase locale IDs with case-insensitive input; exact code, base language,
 /// then English fallback. Explicit overrides always win.

@@ -9,7 +9,8 @@
 //! The locale tables live as data in `tables/*.json` (see
 //! `tables/README.md`); `tests/vectors/*.json` is the executable contract
 //! every language port runs. The Typst module in `typst/` derives from the
-//! same tables.
+//! same tables; [`typst`] embeds it with the cnice, cdate and cink Typst
+//! packages it imports, for Rust hosts that run Typst in-process.
 //!
 //! One locale per document (BCP 47). Unknown locales fall back through the
 //! base language to English. Explicit overrides always win — tables supply
@@ -29,6 +30,8 @@ pub use cnice::greet::{
 
 use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
+
+pub mod typst;
 
 #[derive(serde::Deserialize)]
 struct LocaleEntry {

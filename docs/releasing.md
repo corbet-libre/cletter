@@ -6,10 +6,12 @@ version for corrections.
 
 1. Update versions and CHANGELOG.md (a `## X.Y.Z - date` section becomes the
    release notes), then regenerate canonical tables with
-   `bash js/@corbet-labs/cletter/scripts/sync-assets.sh`. After updating the
-   sibling versions, run `python scripts/sync-typst-family.py /path/to/family`
-   against their final checkouts and review both versions and hashes in
-   `typst/vendor/manifest.json`. Commit to `main`.
+   `bash js/@corbet-labs/cletter/scripts/sync-assets.sh`. When the sibling
+   requirements in `Cargo.toml` change, update the matching
+   `@preview/<name>:<version>` imports in `typst/letter.typ` (the metadata
+   check requires them to be equal) and run
+   `python scripts/typst-conformance.py /path/to/family` against the final
+   sibling checkouts. Commit to `main`.
 2. Optionally rehearse: run `.github/workflows/release.yml` from `main` without
    a tag (`gh workflow run release.yml --ref main`). It runs the release checks
    and imports and inspects the bundle, retaining it as a workflow artifact.
@@ -91,7 +93,11 @@ CDNs. A successful Linux check does not prove native Windows/macOS behavior.
 Minimum-runtime checks are separate from current-runtime checks. Record any
 unavailable runtime or registry explicitly instead of marking it verified.
 
-The Typst archive installs into an `@local` package namespace. Typst Universe
-requires a separate eligible submission; see [installation](installation.md).
+The Typst archive installs into an `@local` package namespace. Its sources
+import cnice, cdate and cink as `@preview` packages; `scripts/package-typst.py`
+installs those from the sibling checkouts beside this repository (or the
+directory given as its argument) and fails when their versions differ from the
+imports. Release the siblings first. Typst Universe requires a separate
+eligible submission; see [installation](installation.md).
 The release run's `prepare` artifact retains the checked Typst archive and receipt
 for 14 days.

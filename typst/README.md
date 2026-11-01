@@ -1,8 +1,10 @@
 # Typst correspondence facade
 
-Copy this complete directory into a project and import `letter.typ`. It contains
-its generated locale tables and vendored family sources, so no package registry
-lookup or sibling checkout is needed while compiling.
+`letter.typ` is the entrypoint of the `@preview/cletter` package. It contains
+the generated locale tables and imports the family packages `@preview/cnice`,
+`@preview/cdate` and `@preview/cink` at the exact versions `Cargo.toml`
+requires; install those beside cletter (see the installation guide). No family
+source is copied into this directory.
 
 ```typst
 #import "letter.typ": salutation, closing, long-date, orthography-issues
@@ -12,8 +14,9 @@ lookup or sibling checkout is needed while compiling.
 #assert.eq(orthography-issues("de-li", "Grüße"), (("ß", "ss"),))
 ```
 
-The facade reexports cgreet's salutation and recipient-advisory helpers,
-cfarewell's closing, cdate's date formats, and cink's `signature-image`.
+The facade reexports cnice's salutation and recipient-advisory helpers
+(`greet`) and closing (`farewell`), cdate's date formats, and cink's
+`signature-image`.
 Opening, subject, locale resolution and orthography remain cletter-owned.
 Locale IDs are lowercase; mixed-case inputs resolve compatibly. Explicit
 opening/subject/closing overrides and recipient names are preserved verbatim.
@@ -31,17 +34,20 @@ supported locale shape separately.
 excludes names, quotations, URLs and exact source material; neither helper
 infers protected boundaries or evaluates a letter's evidence, tone or argument.
 
-`vendor/manifest.json` records repositories, candidate package versions and exact
-SHA-256 identities of copied sources. Source hashes are authoritative for an
-unreleased snapshot. Never hand-edit vendored sources: change their owning
-library, regenerate its tables, then run from the cletter checkout:
+Rust hosts that embed Typst register everything with
+`cletter::typst::packages()`: cletter plus the cnice, cdate and cink packages
+embedded in their own crates. It pins the family imports to the crate versions
+Cargo resolved, so a newer compatible family release needs no edit here.
+
+Change family behavior in its owning library. To run the conformance vectors
+against sibling checkouts, from the cletter checkout:
 
 ```sh
-python3 scripts/sync-typst-family.py /path/to/family-checkouts
 python3 scripts/typst-conformance.py /path/to/family-checkouts
 ```
 
-The conformance driver uses an existing `typst` or `tinymist` compiler and runs
-all canonical JSON vectors for cgreet, cfarewell, cdate and cletter. The cink
-Typst helper renders a sized image; decoding and sizing vectors belong to its
-Rust, TypeScript and Python ports.
+The driver stages each checkout as its offline `@preview` package, uses an
+existing `typst` or `tinymist` compiler or the Python `typst` module, and runs
+all canonical JSON vectors for cnice, cdate and cletter. The cink Typst helper
+renders a sized image; decoding and sizing vectors belong to its Rust,
+TypeScript and Python ports.

@@ -1,13 +1,20 @@
-"""Build a self-contained Typst archive and compile an installed-package example.
+"""Build a Typst archive and compile an installed-package example.
 
 Run with the development dependency typst==0.15.0. Package contents come only
 from the repository; installation verification uses a fresh local namespace.
+The cletter sources import cnice, cdate and cink as `@preview` packages at
+exact versions. Verification installs those from sibling checkouts in
+FAMILY_ROOT (default: the parent directory), whose versions must match.
+
+Usage: python scripts/package-typst.py [FAMILY_ROOT]
 """
 from pathlib import Path
 import gzip
 import hashlib
 import io
+import re
 import shutil
+import sys
 import tarfile
 import tempfile
 import tomllib
@@ -15,6 +22,7 @@ import tomllib
 import typst
 
 ROOT = Path(__file__).resolve().parents[1]
+FAMILY_ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT.parent
 manifest = tomllib.loads((ROOT / "typst.toml").read_text())["package"]
 name, version = manifest["name"], manifest["version"]
 examples = {
@@ -53,6 +61,23 @@ with tempfile.TemporaryDirectory(prefix=f"{name}-typst-") as tmp:
     installed.mkdir(parents=True)
     with tarfile.open(fileobj=io.BytesIO(packed), mode="r:gz") as archive:
         archive.extractall(installed, filter="data")
+    # Install the exact family packages the sources import, offline.
+    imports = sorted({
+        match.groups()
+        for path in (stage / "typst").rglob("*.typ")
+        for match in re.finditer(r'"@preview/([a-z][a-z0-9-]*):([0-9]+\.[0-9]+\.[0-9]+)"', path.read_text())
+    })
+    for dependency, required in imports:
+        source = FAMILY_ROOT / dependency
+        found = tomllib.loads((source / "typst.toml").read_text())["package"]["version"]
+        if found != required:
+            raise ValueError(f"{name} imports @preview/{dependency}:{required}, {source} is {found}")
+        target = packages / "preview" / dependency / required
+        target.mkdir(parents=True)
+        shutil.copy2(source / "typst.toml", target / "typst.toml")
+        for item in ("typst", "tables"):
+            if (source / item).is_dir():
+                shutil.copytree(source / item, target / item)
     example = Path(tmp) / "main.typ"
     example.write_text(
         f'#import "@local/{name}:{version}" as api\n'

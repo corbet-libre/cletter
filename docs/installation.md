@@ -1,10 +1,10 @@
 # Installation and distribution
 
-The main branch ships 0.4.1 under LGPL-3.0-only WITH LGPL-3.0-linking-exception, published to registries. The existing releases documented below keep their original
+The main branch ships 0.4.2 under LGPL-3.0-only WITH LGPL-3.0-linking-exception, published to registries. The existing releases documented below keep their original
 license grants; this change does not replace their artifacts.
 
-The JavaScript, Rust and Typst examples below describe version 0.4.1;
-Python installation uses the published 0.4.1 release. Check the linked registry
+The JavaScript, Rust and Typst examples below describe version 0.4.2;
+Python installation uses the published 0.4.2 release. Check the linked registry
 or release for availability; a source manifest alone does not establish publication.
 
 ## JavaScript and Rust
@@ -18,20 +18,20 @@ verify that lower bound.
 ## Python and the command line
 
 The pure Python package requires Python 3.10+ and is published on
-[PyPI](https://pypi.org/project/cletter/0.4.1/). Version 0.2.1 retains
+[PyPI](https://pypi.org/project/cletter/0.4.2/). Version 0.2.1 retains
 [Apache-2.0](https://github.com/corbet-labs/cletter/blob/v0.2.1/LICENSE);
-the LGPL-3.0-only WITH LGPL-3.0-linking-exception terms on main apply to the 0.4.1 release line.
+the LGPL-3.0-only WITH LGPL-3.0-linking-exception terms on main apply to the 0.4.2 release line.
 Install the PyPI release with pip or uv in your Python environment:
 
 ```sh
-python -m pip install cletter==0.4.1
+python -m pip install cletter==0.4.2
 ```
 
 ```sh
-uv pip install cletter==0.4.1
+uv pip install cletter==0.4.2
 ```
 
-For a uv project, `uv add cletter==0.4.1` adds the package to your dependencies.
+For a uv project, `uv add cletter==0.4.2` adds the package to your dependencies.
 The installer retrieves cnice,
 cdate and cink from PyPI automatically.
 
@@ -48,23 +48,23 @@ object of keyword arguments. Use `-` to read arguments from stdin. It writes
 JSON to stdout; errors use stderr and a nonzero exit status. Image bytes in
 the `normalize` result are base64 strings.
 
-For an isolated CLI environment, use `pipx install cletter==0.4.1` or
-`uv tool install cletter==0.4.1`.
+For an isolated CLI environment, use `pipx install cletter==0.4.2` or
+`uv tool install cletter==0.4.2`.
 
 The wheel contains no native extensions and is platform independent. Release
 evidence records the Python version and operating system actually exercised.
 Verified wheels and source distributions are also attached to the
-[GitHub release](https://github.com/corbet-foss/cletter/releases/tag/v0.4.1).
+[GitHub release](https://github.com/corbet-foss/cletter/releases/tag/v0.4.2).
 The Python 0.2.1 API predates `normalize_locale_id`, which appears in newer
 source documentation.
 
 ## JSR
 
 The JSR distribution is named
-[`@corbet-labs/cletter`](https://jsr.io/@corbet-labs/cletter@0.4.1):
+[`@corbet-labs/cletter`](https://jsr.io/@corbet-labs/cletter@0.4.2):
 
 ```sh
-deno add jsr:@corbet-labs/cletter@0.4.1
+deno add jsr:@corbet-labs/cletter@0.4.2
 ```
 
 The JSR facade imports its published npm components. In an existing Node project,
@@ -73,8 +73,8 @@ for a standalone call with `deno run --node-modules-dir=auto app.ts`.
 
 ## Typst
 
-Download `cletter-0.4.1-typst.tar.gz` from the matching GitHub release and
-extract its contents into `typst/packages/local/cletter/0.4.1` under your
+Download `cletter-0.4.2-typst.tar.gz` from the matching GitHub release and
+extract its contents into `typst/packages/local/cletter/0.4.2` under your
 [Typst data directory](https://github.com/typst/packages#local-packages):
 
 | System | Data directory |
@@ -84,13 +84,20 @@ extract its contents into `typst/packages/local/cletter/0.4.1` under your
 | Windows | `%APPDATA%` |
 
 ```typst
-#import "@local/cletter:0.4.1": *
+#import "@local/cletter:0.4.2": *
 ```
 
-The archive includes its manifest, tables, source, and licenses. CI compiles
-an example against a fresh installation of the actual archive with Typst 0.15.
-For the Typst web app, upload the extracted files and import the entrypoint
-listed in `typst.toml` by its relative path.
+The archive includes its manifest, tables, source, and licenses. Its source
+imports the family packages `@preview/cnice:0.1.3`, `@preview/cdate:0.3.3` and
+`@preview/cink:0.2.2`. Typst resolves them from Typst Universe once they are
+listed there; until then, extract each sibling's Typst archive into
+`typst/packages/preview/<name>/<version>` under the same data directory. CI
+compiles an example against a fresh installation of the actual archive and
+its siblings with Typst 0.15.
+
+Rust applications that embed Typst need no archive: register
+`cletter::typst::packages()`, which supplies cletter and the three family
+packages from their crates at the versions Cargo resolved.
 
 For signature images, load bytes in your document so paths resolve from the
 document directory:

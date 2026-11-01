@@ -1,11 +1,13 @@
 """Require aligned versions and the complete LGPL distribution notices."""
 import json
+import re
 from pathlib import Path
 import subprocess
 import tomllib
 
 root = Path(__file__).resolve().parent.parent
-crate = tomllib.loads((root / "Cargo.toml").read_text())["package"]
+crate_manifest = tomllib.loads((root / "Cargo.toml").read_text())
+crate = crate_manifest["package"]
 name = crate["name"]
 version = crate["version"]
 license_id = crate["license"]
@@ -24,6 +26,15 @@ for manifest, key in (("py/pyproject.toml", "project"), ("typst.toml", "package"
     metadata = tomllib.loads((root / manifest).read_text())[key]
     assert metadata["version"] == version
     assert metadata["license"] == license_id
+# The crate ships the Typst package (src/typst.rs embeds it; its tests compare
+# the embedded files and identity with disk).
+assert tomllib.loads((root / "typst.toml").read_text())["package"]["name"] == name
+assert {"typst.toml", "typst/**"} <= set(crate_manifest["package"]["include"])
+# letter.typ imports each sibling package at exactly the version Cargo.toml
+# requires; cletter::typst::packages() pins them to the resolved crates.
+assert not (root / "typst/vendor").exists(), "Typst family sources must not be vendored"
+imports = re.findall(r'"@preview/([a-z][a-z0-9-]*):([^"]+)"', (root / "typst/letter.typ").read_text())
+assert sorted(imports) == sorted((sibling, crate_manifest["dependencies"][sibling]) for sibling in ("cnice", "cdate", "cink")), imports
 expected = {path.name: path.read_bytes() for path in (root / "LICENSES").iterdir() if path.is_file()}
 for filename in ("LGPL-3.0-only.txt", "LGPL-3.0-linking-exception.txt", "GPL-3.0-only.txt"):
     assert expected[filename], f"Missing complete {filename}"

@@ -18,15 +18,15 @@ salutation('de-ch', 'Frau Dr. Müller');
 | Environment | Command |
 | --- | --- |
 | Rust / Cargo | `cargo add cletter` |
-| Python / pip | `python -m pip install cletter==0.4.1` |
-| Python / uv | `uv add cletter==0.4.1` |
+| Python / pip | `python -m pip install cletter==0.4.2` |
+| Python / uv | `uv add cletter==0.4.2` |
 | Node.js / npm | `npm install @corbet-labs/cletter` |
 | pnpm | `pnpm add @corbet-labs/cletter` |
 | Yarn | `yarn add @corbet-labs/cletter` |
 | Bun | `bun add @corbet-labs/cletter` |
 | Deno | `deno add npm:@corbet-labs/cletter` |
 
-The 0.4.1 JavaScript distribution includes compiled ESM, CommonJS,
+The 0.4.2 JavaScript distribution includes compiled ESM, CommonJS,
 TypeScript declarations, and a standalone browser module. Node.js 20+ is
 supported; no TypeScript loader is required.
 
@@ -37,13 +37,13 @@ const { salutation } = require('@corbet-labs/cletter');
 
 ```html
 <script type="module">
-  import { salutation } from 'https://cdn.jsdelivr.net/npm/@corbet-labs/cletter@0.4.1/dist/browser.js';
+  import { salutation } from 'https://cdn.jsdelivr.net/npm/@corbet-labs/cletter@0.4.2/dist/browser.js';
   console.log(salutation('de-ch', 'Frau Dr. Müller'));
 </script>
 ```
 
 ```typst
-#import "@preview/cletter:0.4.1": salutation, closing
+#import "@preview/cletter:0.4.2": salutation, closing
 
 #salutation("de-ch", "Frau Dr. Müller")
 // Sehr geehrte Frau Dr. Müller
@@ -51,7 +51,7 @@ const { salutation } = require('@corbet-labs/cletter');
 // Freundliche Grüsse
 ```
 
-Python 3.10+ users can install [cletter 0.4.1 from PyPI](https://pypi.org/project/cletter/0.4.1/),
+Python 3.10+ users can install [cletter 0.4.2 from PyPI](https://pypi.org/project/cletter/0.4.2/),
 including its component dependencies. This release line is
 [LGPL-3.0-only WITH LGPL-3.0-linking-exception](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-linking-exception.txt);
 the retained 0.2.1 line stays
@@ -70,6 +70,34 @@ assert_eq!(salutation(&locale, "Frau Dr. Müller"), "Sehr geehrte Frau Dr. Müll
 assert_eq!(closing(&locale, None), "Freundliche Grüsse");
 assert_eq!(long_date(&locale, 2026, 9, 7).as_deref(), Some("7. September 2026"));
 ```
+
+### Typst in Rust hosts
+
+The crate also ships the Typst package. Applications that embed the Typst
+compiler register it from `cletter::typst` instead of downloading or vendoring
+a copy. `packages()` returns cletter together with the cnice, cdate and cink
+packages its sources import, taken from those crates, so one call registers
+the whole family and Rust and Typst always come from the same releases.
+
+```rust
+use cletter::typst::{packages, spec};
+
+let packages = packages();
+assert_eq!(packages[0].spec, spec());
+assert_eq!(packages.len(), 4);
+for package in &packages {
+    for (path, bytes) in &package.files {
+        // Serve `bytes` for `path` inside `package.spec` in your Typst world.
+        let _ = (path, bytes.len());
+    }
+}
+```
+
+Cargo may resolve a newer compatible cnice, cdate or cink than the minimum
+this crate requires. `packages()` therefore pins the family import versions
+in cletter's sources to the crates actually linked; `FILES` keeps the sources
+exactly as published. Documents import the package as usual, for example
+`#import "@preview/cletter:0.4.2": salutation, closing`.
 
 ## Python
 
@@ -100,7 +128,7 @@ The API below follows current main. Python 0.2.1 on PyPI predates
 
 Openings and closings have 40 locale entries. Date formatting currently covers German and English variants; other dates fall back to English. Locale IDs are lowercase in tables and outputs; lookups accept mixed case and explicit overrides win. Subject defaults are for job applications; supply a prefix override for other correspondence. The library produces letter components; your application owns the body, layout, and PDF rendering. Spelling transformations require caller-selected prose: preserve exact names, quotations, URLs and source material; use diagnostics when those boundaries are unavailable.
 
-The self-contained [Typst facade](https://github.com/corbet-foss/cletter/blob/main/typst/README.md) consumes the same greeting, closing and date helpers as the other ports.
+The [Typst facade](https://github.com/corbet-foss/cletter/blob/main/typst/README.md) consumes the same greeting, closing and date helpers as the other ports.
 
 Use `normalize_locale_id` (`normalizeLocaleId` in JavaScript) when the caller
 has selected an explicit locale: `" EN_CH "` becomes `"en-ch"` even though that
@@ -140,7 +168,7 @@ for generation, verification, and publication commands.
 
 ## License
 
-Copyright 2026 Julian Y. Richard Corbet. The 0.4.1 release line is licensed
+Copyright 2026 Julian Y. Richard Corbet. The 0.4.2 release line is licensed
 under [LGPL-3.0-only](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-only.txt)
 [WITH LGPL-3.0-linking-exception](https://github.com/corbet-foss/cletter/blob/main/LICENSES/LGPL-3.0-linking-exception.txt),
 with the incorporated [GPL version 3](https://github.com/corbet-foss/cletter/blob/main/LICENSES/GPL-3.0-only.txt).
@@ -149,11 +177,11 @@ library modifications stay LGPL. Applications can use a different license
 subject to the LGPL's conditions.
 Previously released and already prepared distributions retain their original
 grants. The installation examples above refer to those available releases;
-0.4.1 is published to registries.
+0.4.2 is published to registries.
 
-The existing cdate, cfarewell and cink Typst snapshots remain Apache-2.0;
-the cgreet snapshot remains MIT OR Apache-2.0. Their files and notices
-are preserved unchanged.
+The Typst package no longer bundles copies of cnice, cdate or cink; it
+imports their own packages, which carry their own notices. Earlier releases
+that bundled Apache-2.0 or MIT OR Apache-2.0 snapshots keep those grants.
 
 See the [licensing notes](https://github.com/corbet-foss/cletter/blob/main/LICENSE.md) for distribution conditions and retained notices.
 Contributions are subject to the [Contributor License Agreement](CLA.md).

@@ -3,6 +3,25 @@
 All notable changes to `cletter` are documented here. The project follows
 Semantic Versioning.
 
+## 0.4.2 - 2026-11-01
+
+- The Typst package imports `@preview/cnice:0.1.3`, `@preview/cdate:0.3.3`
+  and `@preview/cink:0.2.2` instead of bundling copies: `typst/vendor/` and
+  `scripts/sync-typst-family.py` are gone. The Typst API is unchanged; the
+  108 Typst vectors pass against the staged sibling packages.
+- The Rust crate ships the Typst package (`typst.toml`, `typst/**`) in the new
+  `cletter::typst` module: `NAMESPACE`, `NAME`, `VERSION`, `spec()`, `FILES`,
+  and `packages()`, which returns cletter with the cnice, cdate and cink
+  packages from their crates for one call registration in Rust Typst hosts.
+  `packages()` pins the family import versions to the crates Cargo resolved,
+  so a newer compatible sibling release works without a cletter release.
+- Require cnice 0.1.3, cdate 0.3.3 and cink 0.2.2, the first releases whose
+  crates ship their Typst packages.
+- `scripts/check-versions.py` requires the Typst import versions to equal the
+  Cargo requirements and rejects a vendored tree; `scripts/package-typst.py`
+  and `scripts/typst-conformance.py` install the sibling checkouts as offline
+  packages.
+
 ## 0.4.1 - 2026-09-25
 
 - Repository moved to github.com/corbet-foss/cletter; registry metadata points there.
