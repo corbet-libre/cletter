@@ -35,35 +35,6 @@ def check_shell_blocks(source, path):
             ast.parse(embedded, filename=path + ":python-heredoc")
 
 
-def check_crow_secrets(source, package):
-    sections = re.split(r"^  - name: ", source, flags=re.M)
-    require("from_secret:" not in sections[0], "Shared release configuration must have no credentials")
-    steps = dict(section.split("\n", 1) for section in sections[1:])
-    expected = {"validate-release-selection", "inspect-prepared-packages", "release-status",
-                "publish-cargo", "publish-npm", "publish-jsr", "publish-pypi"}
-    require(len(sections) == len(expected) + 1 and set(steps) == expected, "Unexpected release credential boundaries")
-    require("when:" not in steps["validate-release-selection"], "Release input validation must always run")
-    for name, block in steps.items():
-        secrets = re.findall(r"from_secret:\s*([A-Za-z0-9_]+)", block)
-        expected_secrets = []
-        if name == "release-status" or name.startswith("publish-"):
-            expected_secrets.append(package + "_release_github_token")
-        if name.startswith("publish-"):
-            channel = name.removeprefix("publish-")
-            expected_secrets.append(package + "_release_" + channel + "_token")
-            require('RELEASE_OPERATION == "publish"' in block and 'RELEASE_CHANNELS == "' + channel + '"' in block,
-                    "Publication credentials require compile-time operation/channel guards")
-        elif name in {"inspect-prepared-packages", "release-status"}:
-            operation = "inspect" if name == "inspect-prepared-packages" else "status"
-            require('RELEASE_OPERATION == "' + operation + '"' in block, "Inspection/status operation guard is missing")
-        require(sorted(secrets) == sorted(expected_secrets), "Step has unexpected or missing release credentials: " + name)
-        if name != "validate-release-selection":
-            require("when:" in block and "evaluate:" in block and "validate-release-selection" in block,
-                    "Release executor must be compile-time guarded and depend on input validation")
-            require(re.search(r"[&*]publisher-environment\b", block) and re.search(r"[&*]publisher-commands\b", block),
-                    "Release executors must reuse the same verified publisher identity and commands")
-
-
 def workflow_jobs(source):
     """Split a workflow's top-level jobs into {name: block} without a YAML parser."""
     body = source.split("\njobs:\n", 1)[1]
@@ -72,7 +43,7 @@ def workflow_jobs(source):
 
 
 def main():
-    paths = [".ci/publish.py", ".ci/release-check.py", ".ci/ccid.toml", ".crow/release.yaml",
+    paths = [".ci/publish.py", ".ci/release-check.py", ".ci/ccid.toml",
              ".github/workflows/release.yml", ".github/workflows/ci.yml"]
     files = {path: (ROOT / path).read_text() for path in paths}
     package = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["name"]
@@ -88,14 +59,12 @@ def main():
     for selector, command in (("release", ".ci/publish.py"), ("release-config", ".ci/release-check.py")):
         require(config["checks"][selector] == {"kind": "commands", "commands": [["python3", command]]},
                 "Unexpected manual publication selector command")
-    crow, hosted = files[".crow/release.yaml"], files[".github/workflows/release.yml"]
-    pins = [re.findall(r"^\s+CCID_REVISION:\s*['\"]?([0-9a-f]{40})['\"]?\s*$", value, re.M) for value in (crow, hosted)]
-    require(len(pins[0]) == 1 and pins[0] == pins[1], "Release routes must pin the same reviewed publisher revision")
+    hosted = files[".github/workflows/release.yml"]
+    pins = re.findall(r"^\s+CCID_REVISION:\s*['\"]?([0-9a-f]{40})['\"]?\s*$", hosted, re.M)
+    require(len(pins) == 1, "Hosted release must pin a reviewed publisher revision")
     require(hosted.count("repository: corbet-libs/ccid\n") == hosted.count("ref: ${{ env.CCID_REVISION }}\n") >= 1
             and "ref: " not in hosted.replace("ref: ${{ env.CCID_REVISION }}", ""),
             "Hosted checkout differs from the pinned publisher")
-    require("event: manual" in crow and "branch: main" in crow and "--check release" in crow,
-            "Crow publication must remain a manual main-branch release command")
     # One pushed vX.Y.Z tag is the release trigger; dispatch re-runs or rehearses.
     require(re.search(r"^on:\n  push:\n    tags: \['v\*\.\*\.\*'\]\n  workflow_dispatch:\n", hosted, re.M)
             and "branches:" not in hosted and "pull_request" not in hosted
@@ -118,16 +87,12 @@ def main():
     require(publish.count("python3 .ci/publish.py publish") == 2
             and all("RELEASE_CHANNELS: " + channel + "\n" in publish for channel in ("cargo", "jsr")),
             "Each hosted upload must select exactly one OIDC registry")
-    require("from_secret: " + package + "_release_pypi_token" in crow, "Crow PyPI route is missing")
-    check_crow_secrets(crow, package)
-    require("rustup" not in crow and "cargo build" not in crow and "cargo test" not in crow,
-            "Credentialed Crow publication must not build products")
     checks = files[".github/workflows/ci.yml"]
     require("'release'" in checks and "release-config) python3 .ci/release-check.py" in checks,
             "Hosted selected checks must route release configuration separately from publication")
     require("workflow_call:" in checks and "secrets" not in checks and not re.search(r":\s*write\b", checks),
             "Selected checks must stay a credential-free reusable preparation workflow")
-    for path in (".crow/release.yaml", ".github/workflows/release.yml", ".github/workflows/ci.yml"):
+    for path in (".github/workflows/release.yml", ".github/workflows/ci.yml"):
         source = files[path]
         # Only release.yml's tag trigger may start work automatically.
         automatic = re.findall(r"^ +(?:push|pull_request\w*|schedule):", source, re.M)
@@ -144,7 +109,7 @@ def main():
     require(actionlint is not None, "Actionlint is required; use the provisioned Crow tool or hosted setup")
     version = subprocess.check_output([actionlint, "-version"], text=True).strip()
     subprocess.run([actionlint, ".github/workflows/ci.yml", ".github/workflows/release.yml"], cwd=ROOT, check=True)
-    print(json.dumps({"repository": repository, "publisher_revision": pins[0][0],
+    print(json.dumps({"repository": repository, "publisher_revision": pins[0],
                       "checks": ["python syntax", "shell syntax", "release contract"],
                       "actionlint": {"path": actionlint, "version": version, "status": "passed"},
                       "files": {path: hashlib.sha256(value.encode()).hexdigest() for path, value in files.items()}}, sort_keys=True))
