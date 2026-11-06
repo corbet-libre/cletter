@@ -178,8 +178,19 @@ def typst_package():
 
 def typst_conformance():
     artifact_directory()
-    run("uv", "run", "--offline", "--no-python-downloads", "--with", "typst==0.15.0",
-        "python", "scripts/typst-conformance.py", ROOT.parent, NAME)
+    siblings = os.environ.get("CCID_SIBLINGS_DIR")
+    if not siblings:
+        run("uv", "run", "--offline", "--no-python-downloads", "--with", "typst==0.15.0",
+            "python", "scripts/typst-conformance.py", ROOT.parent, NAME)
+    else:
+        # The runner staged the family siblings read-only; the conformance run wants them next to
+        # this checkout, so build that layout from links in a scratch directory.
+        with tempfile.TemporaryDirectory(prefix="family-") as family:
+            for sibling in Path(siblings).iterdir():
+                (Path(family) / sibling.name).symlink_to(sibling)
+            (Path(family) / NAME).symlink_to(ROOT)
+            run("uv", "run", "--offline", "--no-python-downloads", "--with", "typst==0.15.0",
+                "python", "scripts/typst-conformance.py", family, NAME)
     export("typst-conformance", [])
 
 

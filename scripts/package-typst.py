@@ -4,7 +4,8 @@ Run with the development dependency typst==0.15.0. Package contents come only
 from the repository; installation verification uses a fresh local namespace.
 The cletter sources import cnice, cdate and cink as `@preview` packages at
 exact versions. Verification installs those from sibling checkouts in
-FAMILY_ROOT (default: the parent directory), whose versions must match.
+FAMILY_ROOT (default: CCID_SIBLINGS_DIR when a CI runner staged the siblings,
+otherwise the parent directory), whose versions must match.
 
 Usage: python scripts/package-typst.py [FAMILY_ROOT]
 """
@@ -13,6 +14,7 @@ import gzip
 import hashlib
 import io
 import re
+import os
 import shutil
 import sys
 import tarfile
@@ -22,7 +24,8 @@ import tomllib
 import typst
 
 ROOT = Path(__file__).resolve().parents[1]
-FAMILY_ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT.parent
+# An explicit argument wins; then CCID_SIBLINGS_DIR (the siblings a CI runner staged for this job); then the parent directory.
+FAMILY_ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else os.environ.get("CCID_SIBLINGS_DIR") or ROOT.parent).resolve()
 manifest = tomllib.loads((ROOT / "typst.toml").read_text())["package"]
 name, version = manifest["name"], manifest["version"]
 examples = {

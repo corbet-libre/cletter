@@ -110,15 +110,18 @@ commands = [["python3", ".ci/published-python-release.py"]]
 [checks.verify]
 kind = "commands"
 commands = [["bash", ".ci/verify.sh"]]
+# The family siblings the typst checks read (staged by the job's `siblings`): their resolved commits key the cached result.
+cache_env = ["CCID_SIBLINGS_REVISIONS"]
 cache_tools = [["rustc", "-vV"], ["cargo", "--version"], ["rustup", "run", "1.94.0", "rustc", "-vV"], ["rustup", "run", "1.94.0", "cargo", "--version"], ["python3", "--version"], ["node", "--version"], ["bun", "--version"], ["npm", "--version"], ["deno", "--version"], ["uv", "--version"]]
 
 [render]
-tool_revision = "bd9aff07073185fb0a3503bab331aedefb6d8fd2"
-tool_sha256 = "38c0eadf2a2adb406f83c7d4892bc01a0a10b95671e1e671358e43a257bb5d23"
+tool_revision = "01ea43c012731748e1022b31976fb2928de60bd3"
+tool_sha256 = "eb4a58d575805c509a5776bf3790147d0a4dbda32c0ebb2bf08f5a471f3c4d84"
 [jobs.verify]
 scheduler = "forgejo"
 runs_on = "heavy"
 checks = ["verify", "published-npm", "published-jsr", "published-python", "resolve-dependencies"]
 workflow = "ci"
 command = ["bash", ".ci/run-cached.sh"]
-events = ["manual"]
+events = ["push", "manual"]
+siblings = { cdate = "main", cink = "main", cnice = "main" }
