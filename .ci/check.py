@@ -261,7 +261,35 @@ def resolve_dependencies():
     export("resolve-dependencies", [ROOT / "Cargo.lock", JS / "bun.lock"])
 
 
+# The registry pages of one exact version: 200 = published, 404 = not published yet. Read from the public registries,
+# never through a caching mirror, because only they know what is published.
+VERSION_URLS = {
+    "npm": f"https://registry.npmjs.org/@corbet-labs/{NAME}/{VERSION}",
+    "jsr": f"https://jsr.io/@corbet-labs/{NAME}/{VERSION}_meta.json",
+    "python": f"https://pypi.org/pypi/{NAME}/{VERSION}/json",
+}
+
+
+def version_published(channel):
+    import urllib.error
+    import urllib.request
+    request = urllib.request.Request(VERSION_URLS[channel], headers={"User-Agent": f"{NAME}-ci"})
+    try:
+        with urllib.request.urlopen(request, timeout=60):
+            return True
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return False
+        raise
+
+
 def published(channel):
+    # A version the registry does not have yet is a release in waiting: a release tag hands it to the srv release flow
+    # (infra hosts/nixnas-release-publish.nix), which publishes it and then runs this workflow on main again, so these
+    # consumer checks run against the published package. Only a 404 for the exact version skips; any other answer fails.
+    if not version_published(channel):
+        print(f"published-{channel}: {NAME} {VERSION} is not on the registry yet (a release in waiting): skipped")
+        return
     with tempfile.TemporaryDirectory(prefix=f"{NAME}-{channel}-") as temporary:
         scratch = Path(temporary)
         if channel in {"npm", "jsr"}:
