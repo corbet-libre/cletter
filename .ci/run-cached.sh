@@ -55,13 +55,6 @@ TOOLCHAIN_WANT_NIGHTLY=0
 TOOLCHAIN_WASM_TARGETS=""
 # shellcheck source=toolchain-lock.sh
 source "$(dirname "${BASH_SOURCE[0]}")/toolchain-lock.sh"
-# MSRV comes from the SAME gate->main flow: TOOLCHAIN_EXTRA_TOOLCHAINS is
-# readiness-probed under shared and installed under exclusive inside
-# toolchain_ensure (repo-local helper extension; production helper untouched).
-# Derive + pin here so drift fail-closes before provisioning.
-MINIMUM_RUST="$(python3 -c 'import re,tomllib;v=tomllib.load(open("Cargo.toml","rb"))["package"]["rust-version"];v=v if v.count(".")==2 else v+".0";print(v)')"
-test "$MINIMUM_RUST" = "1.94.0" || { echo "Cargo rust-version drifted: $MINIMUM_RUST" >&2; exit 2; }
-TOOLCHAIN_EXTRA_TOOLCHAINS="$MINIMUM_RUST"
 toolchain_ensure
 # Per-repo helper installs: no cargo-installed helpers exist in these gates (maturin/typst
 # arrive via uv, pnpm/yarn via npx, wasm via cargo run from source); keep a per-repo
@@ -83,8 +76,6 @@ proto --version
 moon --version
 rustc -vV
 cargo --version
-rustup run 1.94.0 rustc -vV
-rustup run 1.94.0 cargo --version
 python3 --version
 node --version
 bun --version

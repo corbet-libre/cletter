@@ -12,8 +12,7 @@ When hosted execution is available, free, and appropriate for the public inputs,
 run `.github/workflows/ci.yml` with a comma-separated `checks` selection. It uses
 the same repository commands on Linux with two Cargo build/test threads and a
 15-minute job limit. Default selection: `metadata,rust`. Rust selects current
-`stable`; the optional `rust-msrv` check reads the minimum from `Cargo.toml` and
-runs separately. It does not fix the default compiler to that minimum.
+`stable`; no older minimum version is checked or promised.
 
 JavaScript, package, and published-consumer selectors provision only their needed
 hosted tools. For additional manager coverage, select `js-package` before
@@ -88,7 +87,6 @@ only for matching source, dependency closure, tools, configuration and environme
 | `release-config` | Release adapter contract (tag trigger, job permissions, OIDC routes, publisher pin) and Python/shell syntax; required provisioned Actionlint |
 | `fmt` | Rust formatting only |
 | `rust` | Locked Rust tests including doctests, formatting, Clippy with denied warnings |
-| `rust-msrv` | Minimum Rust tests; Crow requires provisioned 1.94.0, while hosted setup reads `Cargo.toml` |
 | `javascript` | Strict TypeScript and shared source vectors |
 | `rust-package` | Build and verify the registry-resolved Cargo package |
 | `js-package` | Pack once; installed npm/Node/Bun imports and declarations, browser module, JSR dry-run |

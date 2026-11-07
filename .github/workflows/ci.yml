@@ -78,14 +78,9 @@ jobs:
           for selector in {'js-pnpm', 'js-yarn', 'js-bun'} & set(selectors):
               if 'js-package' not in selectors or selectors.index('js-package') > selectors.index(selector):
                   raise SystemExit('Additional JS managers require js-package earlier in the same selection')
-          minimum = package['rust-version']
-          if not re.fullmatch(r'\d+\.\d+(?:\.\d+)?', minimum):
-              raise SystemExit('Cargo rust-version must declare a numeric minimum')
-          minimum = minimum if minimum.count('.') == 2 else minimum + '.0'
           selected = set(selectors)
           flags = {
               'rust': bool(selected & {'rust', 'fmt', 'rust-package', 'resolve-dependencies'}),
-              'msrv': 'rust-msrv' in selected,
               'actionlint': 'release-config' in selected,
               'node': bool(selected & {'javascript', 'js-package', 'js-pnpm', 'js-yarn', 'js-bun', 'published-npm', 'resolve-dependencies'}),
               'bun': bool(selected & {'javascript', 'js-package', 'js-pnpm', 'js-yarn', 'js-bun', 'published-npm', 'resolve-dependencies'}),
@@ -99,7 +94,6 @@ jobs:
               environment.write('CI_COMMIT_SHA=' + os.environ['GITHUB_SHA'] + '\n')
               environment.write('SOURCE_SHA256=' + os.environ['SOURCE_SHA256'] + '\n')
               environment.write('SELECTED_CHECKS=' + ','.join(selectors) + '\n')
-              environment.write('MINIMUM_RUST=' + minimum + '\n')
           js = Path('js/@corbet-labs') / package['name']
           inputs = [Path('Cargo.toml'), Path('Cargo.lock'), js / 'package.json', js / 'bun.lock', js / 'jsr.json', Path('py/pyproject.toml'), Path('typst.toml')]
           directory = Path(os.environ['ARTIFACT_ROOT'])
@@ -120,13 +114,8 @@ jobs:
         shell: bash
         run: rustup toolchain install stable --profile minimal --component rustfmt,clippy
 
-      - name: Set up optional minimum Rust coverage
-        if: steps.plan.outputs.msrv == 'true'
-        shell: bash
-        run: rustup toolchain install "$MINIMUM_RUST" --profile minimal
-
       - name: Reuse Rust dependencies
-        if: steps.plan.outputs.rust == 'true' || steps.plan.outputs.msrv == 'true'
+        if: steps.plan.outputs.rust == 'true'
         uses: Swatinem/rust-cache@49a0bdc70d2e1b713ca9e2869b211fcce03d3c1c
         with:
           shared-key: hosted-selected-linux
@@ -183,8 +172,6 @@ jobs:
           selected = receipt['tools_selected']
           if selected['rust']:
               commands += [['rustup', 'run', 'stable', tool, '--version'] for tool in ('rustc', 'cargo')]
-          if selected['msrv']:
-              commands += [['rustup', 'run', os.environ['MINIMUM_RUST'], tool, '--version'] for tool in ('rustc', 'cargo')]
           commands += [[tool, '--version'] for tool in ('node', 'bun', 'deno', 'uv') if selected[tool]]
           if selected['node']:
               commands += [['npm', '--version']]
@@ -211,7 +198,6 @@ jobs:
                 cargo clippy --all-targets --locked -- -D warnings
                 ;;
               fmt) cargo fmt --all -- --check ;;
-              rust-msrv) RUSTUP_TOOLCHAIN="$MINIMUM_RUST" cargo test --locked ;;
               release-config) python3 .ci/release-check.py ;;
               *) python3 .ci/check.py "$selector" ;;
             esac

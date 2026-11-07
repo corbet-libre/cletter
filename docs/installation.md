@@ -12,8 +12,8 @@ or release for availability; a source manifest alone does not establish publicat
 Use Cargo for Rust and npm, pnpm, Yarn, or Bun for JavaScript. These JavaScript
 package managers share the npm registry; each consumes the same package.
 Deno can use `npm:@corbet-labs/cletter`. The browser export bundles runtime
-dependencies and needs no import map. The declared Rust minimum is 1.94. Release checks use the worker's current stable compiler; a separate minimum-version check is required to
-verify that lower bound.
+dependencies and needs no import map. Builds and release checks use the current stable Rust compiler; no older minimum
+version is promised.
 
 ## Python and the command line
 
