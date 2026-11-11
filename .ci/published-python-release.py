@@ -28,7 +28,7 @@ def digest(path):
 
 def main():
     require(os.environ.get("CI") == "crow"
-            and os.environ.get("CI_REPO") == "corbet-foss/cletter"
+            and os.environ.get("CI_REPO") == "corbet-libre/cletter"
             and os.environ.get("CI_PIPELINE_EVENT") == "manual",
             "Historical Python validation requires the manual cletter Crow route")
     driver_commit = os.environ.get("CI_COMMIT_SHA", "")
@@ -46,7 +46,7 @@ def main():
     parent.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="run-", dir=parent))
     receipt = {
-        "schema": 1, "provider": "crow", "repository": "corbet-foss/cletter",
+        "schema": 1, "provider": "crow", "repository": "corbet-libre/cletter",
         "check": "published-python", "version": "0.2.1",
         "driver_commit": driver_commit, "driver_source_sha256": os.environ.get("SOURCE_SHA256"),
         "source_commit": RELEASE_COMMIT, "source_sha256": source_sha256,
