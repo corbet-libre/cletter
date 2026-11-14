@@ -116,5 +116,4 @@ runs_on = "linux"
 checks = ["verify", "published-npm", "published-jsr", "published-python", "resolve-dependencies"]
 workflow = "ci"
 command = ["bash", ".ci/run-cached.sh"]
-events = ["push", "manual"]
 siblings = { cdate = "main", cink = "main", cnice = "main" }
